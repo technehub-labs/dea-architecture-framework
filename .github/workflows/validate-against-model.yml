@@ -1,0 +1,51 @@
+name: validate-against-model
+
+# Reusable workflow — consumer repos call this to prove their allocation
+# declaration (metamodel-pointer.yaml) is consistent with a pinned OpenDEAM
+# model version. Drift fails the caller's CI.
+#
+# Usage in a consumer repo:
+#   jobs:
+#     allocation:
+#       uses: technehub-labs/dea-architecture-framework/.github/workflows/validate-against-model.yml@v0.1.0
+#       with:
+#         model_ref: v0.1.0
+#         pointer_file: metamodel-pointer.yaml
+
+on:
+  workflow_call:
+    inputs:
+      model_ref:
+        description: "Git ref (tag) of dea-architecture-framework to validate against"
+        required: true
+        type: string
+      pointer_file:
+        description: "Path to the consumer's metamodel-pointer.yaml (relative to consumer repo root)"
+        required: true
+        type: string
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out consumer repo
+        uses: actions/checkout@v4
+
+      - name: Check out OpenDEAM model @ ${{ inputs.model_ref }}
+        uses: actions/checkout@v4
+        with:
+          repository: technehub-labs/dea-architecture-framework
+          ref: ${{ inputs.model_ref }}
+          path: .opendeam
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install pyyaml jsonschema
+
+      - name: Validate consumer pointer against OpenDEAM
+        run: >
+          python3 .opendeam/scripts/validate_consumer.py
+          --model .opendeam/model/opendeam-model.yaml
+          --pointer "${{ inputs.pointer_file }}"

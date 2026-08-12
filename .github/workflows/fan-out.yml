@@ -1,0 +1,31 @@
+name: fan-out
+
+# Dispatches a model-changed event to direct consumers when the model changes
+# on main. Consumers (dea-metamodel first, Phase 2) listen for
+# repository_dispatch type `opendeam-model-changed` to regenerate their
+# derived artifacts (entity-graph.json → PUML → SVG → pages → viewers).
+#
+# NOTE: requires a PAT with repo scope on the org, stored as
+# secrets.MODEL_SYNC_TOKEN — GITHUB_TOKEN cannot dispatch across repos.
+# Inert until Phase 2 wires the dea-metamodel receiver.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "model/**"
+      - "VERSION"
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch to dea-metamodel
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.MODEL_SYNC_TOKEN }}
+          repository: technehub-labs/dea-metamodel
+          event-type: opendeam-model-changed
+          client-payload: >-
+            {"model_version": "${{ github.sha }}",
+             "ref": "${{ github.ref }}"}
