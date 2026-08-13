@@ -4,6 +4,15 @@ The single program-level plan for the OpenDEAM rollout across the org.
 Phase detail lives in the ADRs and PR history; this file tracks **what is
 done, what is live, and what is earmarked for future action**.
 
+## Executed phases (ADR-0003 rollout, Aug 13 2026)
+
+| Phase | Scope | Evidence |
+|---|---|---|
+| 0 | T0: ADR-0003 accepted, model v0.3.0 (49 entities, 27 BBs, 56 rels, +ai-automation-governance dimension), `governed_by` schema+validator, D6 discriminator check downgraded to warning (user decision: models land as authored) | tag `v0.3.0` |
+| 1 | T1 dea-metamodel: graph regen, 12 new entity schemas, TS/TTL/pydantic regen | PR (see repo) |
+| 2 | T3 viewers: new entities flow via sync chain | live URLs |
+| 3 | T2: 12 proposed-status catalog repos scaffolded foundation-first (user decision 2b) | repo list |
+
 ## Executed phases (ADR-0002 rollout, Aug 13 2026)
 
 | Phase | Scope | Evidence |

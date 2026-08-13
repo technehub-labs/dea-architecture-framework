@@ -124,6 +124,7 @@
                 "additionalProperties": false
               },
               "measured_by": { "type": "array", "minItems": 1, "items": { "type": "string", "maxLength": 5 } },
+              "governed_by": { "type": "array", "items": { "type": "string", "maxLength": 5 } },
               "scope_layers": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^L[0-9]+$" } },
               "prior_layer_v2": { "type": "string", "pattern": "^L[0-9]+$" },
               "migration_note": { "type": "string" },

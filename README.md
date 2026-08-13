@@ -2,7 +2,7 @@
 
 > **OpenDEAM (Open Digital Enterprise Architecture Model)** — the root authority for the TechNeHub Labs DEA architecture: layers, building blocks, entity allocation, and relationships.
 
-[![Model Version](https://img.shields.io/badge/OpenDEAM-v0.2.0--alpha-2DD4BF?style=flat-square)](./VERSION)
+[![Model Version](https://img.shields.io/badge/OpenDEAM-v0.3.0--alpha-2DD4BF?style=flat-square)](./VERSION)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)](LICENSE)
 
 ## What this is
@@ -20,13 +20,13 @@ Everything else in the organisation — `dea-metamodel` schemas and viewer graph
 
 | Layer | Name | Scope | Entities |
 |---|---|---|---|
-| **L1** | Ecosystem & Value Network | External | 5 |
-| **L2** | Strategic & Governance | Intent & Rules | 9 |
-| **L3** | Business Operating Model | Internal | 9 |
-| **L4** | Digital & Intelligence | Data & Brain | 6 |
+| **L1** | Ecosystem & Value Network | External | 6 |
+| **L2** | Strategic & Governance | Intent & Rules | 15 |
+| **L3** | Business Operating Model | Internal | 12 |
+| **L4** | Digital & Intelligence | Data & Brain | 8 |
 | **L5** | Technology & Execution | Systems & Infra | 7 |
 
-Plus the **Measurement Dimension** (orthogonal, cross-cutting): `Performance Metric` has no home layer — measurable entities declare `measured_by`, metrics declare `scope_layers`. See [ADR-0002](docs/ADRs/0002-opendeam-v0-2-0-structural-upgrade.md) D1 for why measurement is a dimension, not L6.
+Plus two orthogonal dimensions: the **Measurement Dimension** (`Performance Metric` — measurable entities declare `measured_by`, metrics declare `scope_layers`; ADR-0002 D1) and **AI & Automation Governance** (AI-driven entities may declare `governed_by: [Risk/Control/Regulation]`; ADR-0003 D6). See the ADRs for why these are dimensions, not layers.
 
 Derived from the enterprise axiom: *"An enterprise is any bounded entity that persists by exchanging value with its environment."* See [`docs/allocation-rationale.md`](docs/allocation-rationale.md).
 
@@ -45,9 +45,9 @@ Consumers pin a model **tag** and validate against it:
 # In a consumer repo's workflow (e.g. dea-catalog-processes)
 jobs:
   allocation:
-    uses: technehub-labs/dea-architecture-framework/.github/workflows/validate-against-model.yml@v0.2.0
+    uses: technehub-labs/dea-architecture-framework/.github/workflows/validate-against-model.yml@v0.3.0
     with:
-      model_ref: v0.2.0
+      model_ref: v0.3.0
       pointer_file: metamodel-pointer.yaml
 ```
 

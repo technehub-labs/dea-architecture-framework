@@ -39,6 +39,7 @@ VERSION = BASE / "VERSION"
 
 def main() -> int:
     errors: list[str] = []
+    warnings: list[str] = []
 
     model = yaml.safe_load(MODEL.read_text())
     schema = yaml.safe_load(SCHEMA.read_text())
@@ -122,6 +123,20 @@ def main() -> int:
                     f"whose scope_layers {t['scope_layers']} exclude it"
                 )
 
+    # 6b. governed_by (ADR-0003 D6) -> targets must exist and must be
+    # Risk/Control/Regulation-class entities (L2-risk-compliance block).
+    GOVERNANCE_BB = "L2-risk-compliance"
+    for e in entities:
+        for target in e.get("governed_by", []):
+            t = by_alias.get(target)
+            if not t:
+                errors.append(f"integrity: {e['class_alias']} governed_by unknown alias {target}")
+            elif t.get("building_block") != GOVERNANCE_BB:
+                errors.append(
+                    f"integrity: {e['class_alias']} governed_by {target} — "
+                    f"governed_by must reference Risk/Control/Regulation entities ({GOVERNANCE_BB})"
+                )
+
     # 7. specializes / abstract / realized_in_layers
     for e in entities:
         if e.get("abstract") and not e.get("realized_in_layers"):
@@ -143,7 +158,9 @@ def main() -> int:
                         f"whose realized_in_layers {parent['realized_in_layers']} exclude it"
                     )
 
-    # 8. Shared catalog_repo requires discriminator on every sharer (D6)
+    # 8. Shared catalog_repo without discriminator (D6) — WARNING as of
+    # v0.3.0 (user decision: models land as authored; the convention is
+    # advisory until a shared repo gains real multi-entity content).
     repo_users: dict[str, list[str]] = {}
     for e in entities:
         if e.get("catalog_repo"):
@@ -152,8 +169,8 @@ def main() -> int:
         if len(users) > 1:
             for e in entities:
                 if e.get("catalog_repo") == repo and not e.get("discriminator"):
-                    errors.append(
-                        f"integrity: {e['class_alias']} shares catalog_repo {repo} with "
+                    warnings.append(
+                        f"convention: {e['class_alias']} shares catalog_repo {repo} with "
                         f"{[u for u in users if u != e['class_alias']]} but declares no discriminator (ADR-0002 D6)"
                     )
 
@@ -171,6 +188,10 @@ def main() -> int:
         for e in errors:
             print(f"  ✗ {e}")
         return 1
+    if warnings:
+        print("OpenDEAM model warnings (non-blocking):")
+        for w in warnings:
+            print(f"  ⚠ {w}")
     print(
         f"OpenDEAM model OK — {len(layers)} layers, {n_bbs} building blocks, "
         f"{len(entities)} entities ({n_dims} dimension), {len(rels)} relationships "

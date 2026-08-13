@@ -1,8 +1,21 @@
 # ═══════════════════════════════════════════════════════════════════════════
-# OpenDEAM — Open Digital Enterprise Architecture Model (v0.2.1)
+# OpenDEAM — Open Digital Enterprise Architecture Model (v0.3.0)
 #
 # This file is the SINGLE SOURCE OF TRUTH for the DEA architecture:
 # layers → building blocks → entity allocation → relationships.
+#
+# CHANGE FROM v0.2.0 — see docs/ADRs/ADR-0003-opendeam-v0.3.0-comprehensiveness-expansion.md
+#   - New building blocks (comprehensiveness expansion, checked against the
+#     axiom-derivation/MECE/not-a-TOGAF-repeat filter — see ADR-0003):
+#       L1-ecosystem-platforms   (Ecosystem Platform)
+#       L2-risk-compliance       (Risk, Control, Regulation)
+#       L2-innovation-foresight  (Signal, Experiment, Technology Radar Entry)
+#       L3-people-skills-culture (Skill, Role, Change Initiative)
+#       L4-model-operations      (Model Deployment, Model Feedback Signal)
+#   - New orthogonal_allocator: ai-automation-governance (governed_by field,
+#     reuses Risk/Control/Regulation rather than inventing AI-specific objects).
+#   - Deliberately NOT added: an "AI layer" and a "Sustainability" building
+#     block — see ADR-0003 "Explicitly rejected candidates".
 #
 # CHANGE FROM v0.1.0 — see docs/ADRs/ADR-0002-opendeam-v0.2.0-structural-upgrade.md
 #   - Measurement (L6) demoted from a numbered layer to a cross-cutting
@@ -25,11 +38,11 @@
 model:
   name: OpenDEAM — Open Digital Enterprise Architecture Model
   id: opendeam
-  version: 0.2.1
+  version: 0.3.0
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
-  supersedes: opendeam-model.yaml v0.1.0 (see ADR-0002)
+  supersedes: opendeam-model.yaml v0.2.0 (see ADR-0003)
 
 terminology:
   layer: >
@@ -67,6 +80,9 @@ architecture:
         - id: L1-agreements
           name: Collaboration Agreements
           note: Moved from L2 in v0.2.0 (ADR-0002 D2) — an agreement is a feature of the exchange surface, not internal governance.
+        - id: L1-ecosystem-platforms
+          name: Ecosystem Platforms
+          note: Added in v0.3.0 (ADR-0003 D1) — multi-sided platform hosting, distinct from bilateral Value Exchange.
 
     - id: L2
       name: Strategic & Governance
@@ -84,6 +100,12 @@ architecture:
           name: Semantics & Classification
         - id: L2-architecture-views
           name: Architecture Views
+        - id: L2-risk-compliance
+          name: Risk & Compliance
+          note: Added in v0.3.0 (ADR-0003 D2) — "persists" requires managing existential/regulatory risk as a condition, not an activity layered on top.
+        - id: L2-innovation-foresight
+          name: Innovation & Foresight
+          note: Added in v0.3.0 (ADR-0003 D3) — sensing environmental change before it forces adaptation; formal home for pre-adoption AI/tech tracking.
 
     - id: L3
       name: Business Operating Model
@@ -99,6 +121,9 @@ architecture:
           name: Business Information
         - id: L3-service-offerings
           name: Service Offerings
+        - id: L3-people-skills-culture
+          name: People, Skills & Culture
+          note: Added in v0.3.0 (ADR-0003 D4) — capability of the people themselves and the change effort to shift it, distinct from formal structure.
 
     - id: L4
       name: Digital & Intelligence
@@ -116,6 +141,9 @@ architecture:
           name: Intelligence
         - id: L4-events
           name: Events & Streams
+        - id: L4-model-operations
+          name: Model Operations
+          note: Added in v0.3.0 (ADR-0003 D5) — deployment/monitoring/retraining lifecycle of AI/ML Models, parallel to how L5 separates Systems from Infrastructure. Deliberately not a top-level "AI layer" — see ADR-0003.
 
     - id: L5
       name: Technology & Execution
@@ -152,6 +180,18 @@ architecture:
         measured_by: [metric entity_ids]. Metric entities declare scope_layers to state which
         layers they are permitted to evaluate. This models "persistence over time requires
         feedback" as a dimension applied across the architecture rather than a sixth layer.
+      reference: null
+
+    - id: ai-automation-governance
+      name: AI & Automation Governance
+      owner_repo: technehub-labs/dea-architecture-framework
+      kind: cross-cutting policy overlay (not a layer, not "Responsible AI" as a separate structure)
+      description: >
+        Added in v0.3.0 (ADR-0003 D6). Any AI-driven entity (Actor of AI-agent subtype, AI/ML Model,
+        or a System Function with an enhances/automates relationship from an AIM) may declare
+        governed_by: [Risk/Control/Regulation entity_ids], reusing L2-risk-compliance entities
+        rather than inventing AI-specific governance objects. Deliberately not a separate layer —
+        see ADR-0003 explicit rejection of a "Responsible AI" layer.
       reference: null
 
 allocation:
@@ -201,6 +241,15 @@ allocation:
       catalog_repo: null
       description: Terms governing cooperation with an ecosystem actor — cooperative or mandated.
       migration_note: Reallocated from L2-agreements to L1-agreements in v0.2.0 (ADR-0002 D2).
+
+    - entity_id: dea:entity-ecosystem-platform
+      class_alias: EP
+      display_name: Ecosystem Platform
+      layer: L1
+      building_block: L1-ecosystem-platforms
+      status: proposed
+      catalog_repo: dea-catalog-ecosystem-platforms
+      description: A standing multi-sided structure the enterprise hosts for repeated exchange among many ecosystem actors (marketplace, partner API program, developer portal).
 
     - entity_id: dea:entity-architecture-pattern
       class_alias: AP
@@ -284,6 +333,60 @@ allocation:
       catalog_repo: dea-web-viewer
       description: A tailored perspective on the metamodel for a specific stakeholder concern.
 
+    - entity_id: dea:entity-risk
+      class_alias: RSK
+      display_name: Risk
+      layer: L2
+      building_block: L2-risk-compliance
+      status: proposed
+      catalog_repo: dea-catalog-risk-register
+      description: A condition or event that threatens the enterprise's ability to persist or to realize a capability/objective.
+
+    - entity_id: dea:entity-control
+      class_alias: CTL
+      display_name: Control
+      layer: L2
+      building_block: L2-risk-compliance
+      status: proposed
+      catalog_repo: dea-catalog-controls
+      description: A mechanism (process, technical, or organizational) that mitigates a Risk or enforces a Regulation.
+
+    - entity_id: dea:entity-regulation
+      class_alias: REG
+      display_name: Regulation
+      layer: L2
+      building_block: L2-risk-compliance
+      status: proposed
+      catalog_repo: dea-catalog-regulations
+      description: An externally imposed obligation (law, industry standard with force, contractual mandate) the enterprise must comply with.
+
+    - entity_id: dea:entity-signal
+      class_alias: SIG
+      display_name: Signal
+      layer: L2
+      building_block: L2-innovation-foresight
+      status: proposed
+      catalog_repo: dea-catalog-signals
+      description: A weak or early indicator of environmental change (market, technology, regulatory, competitive) worth tracking before it forces adaptation.
+
+    - entity_id: dea:entity-experiment
+      class_alias: EXP
+      display_name: Experiment
+      layer: L2
+      building_block: L2-innovation-foresight
+      status: proposed
+      catalog_repo: dea-catalog-experiments
+      description: A bounded, time-boxed test of a Signal's relevance to the enterprise before committing investment.
+
+    - entity_id: dea:entity-technology-radar-entry
+      class_alias: TRE
+      display_name: Technology Radar Entry
+      layer: L2
+      building_block: L2-innovation-foresight
+      status: proposed
+      catalog_repo: dea-catalog-technology-radar
+      description: An emerging technology or technique being tracked (assess/trial/adopt/hold) prior to becoming a governed L5 Technology.
+
     - entity_id: dea:entity-actor
       class_alias: AC
       display_name: Actor
@@ -329,7 +432,6 @@ allocation:
       building_block: L3-service-offerings
       status: existing
       catalog_repo: dea-catalog-digital-business-service-factory
-      discriminator: entry_kind
       description: A service exposed to the business or to external consumers. Composite of capabilities, realised by solution components.
 
     - entity_id: dea:entity-capability
@@ -360,7 +462,6 @@ allocation:
       status: existing
       catalog_repo: dea-catalog-digital-business-service-factory
       abstract: true
-      discriminator: entry_kind
       realized_in_layers: [L5]
       description: >
         Abstract parent of ApplicationComponent, InfrastructureComponent, IntegrationComponent
@@ -376,6 +477,33 @@ allocation:
       catalog_repo: dea-catalog-value-streams
       description: An end-to-end collection of value-creating activities spanning multiple capabilities and processes.
 
+    - entity_id: dea:entity-skill
+      class_alias: SKL
+      display_name: Skill
+      layer: L3
+      building_block: L3-people-skills-culture
+      status: proposed
+      catalog_repo: dea-catalog-skills
+      description: A capability an individual Actor possesses or must develop. Distinct from Business Capability, which belongs to the enterprise, not a person.
+
+    - entity_id: dea:entity-role
+      class_alias: ROL
+      display_name: Role
+      layer: L3
+      building_block: L3-people-skills-culture
+      status: proposed
+      catalog_repo: dea-catalog-roles
+      description: A defined set of required Skills and responsibilities that an Actor fulfills within an Organizational Unit.
+
+    - entity_id: dea:entity-change-initiative
+      class_alias: CHI
+      display_name: Change Initiative
+      layer: L3
+      building_block: L3-people-skills-culture
+      status: proposed
+      catalog_repo: dea-catalog-change-initiatives
+      description: A deliberate effort to shift Skills, Roles, or culture within an Organizational Unit, typically funded by an Investment Initiative.
+
     - entity_id: dea:entity-ai-ml-model
       class_alias: AIM
       display_name: AI/ML Model
@@ -383,7 +511,8 @@ allocation:
       building_block: L4-intelligence
       status: planned
       catalog_repo: dea-catalog-ai-ml-models
-      description: A machine-learning or AI model that augments or replaces human decision-making within a capability.
+      governed_by: []
+      description: A machine-learning or AI model that augments or replaces human decision-making within a capability. May declare governed_by (RSK/CTL/REG ids) per the ai-automation-governance dimension.
 
     - entity_id: dea:entity-data-entity
       class_alias: DE
@@ -429,6 +558,25 @@ allocation:
       status: planned
       catalog_repo: dea-catalog-information-classes
       description: A classification of information by sensitivity and regulatory regime (PII, PHI, PCI).
+
+    - entity_id: dea:entity-model-deployment
+      class_alias: MDP
+      display_name: Model Deployment
+      layer: L4
+      building_block: L4-model-operations
+      status: proposed
+      catalog_repo: dea-catalog-model-deployments
+      description: A running instance of an AI/ML Model, hosted on an Application Component, with its own version, monitoring state, and health.
+
+    - entity_id: dea:entity-model-feedback-signal
+      class_alias: MFS
+      display_name: Model Feedback Signal
+      layer: L4
+      building_block: L4-model-operations
+      status: proposed
+      catalog_repo: dea-catalog-model-deployments
+      discriminator: signal_kind
+      description: Drift, performance-degradation, or outcome-quality feedback captured from Events, used to trigger retraining of an AI/ML Model.
 
     - entity_id: dea:entity-application-component
       class_alias: APC
@@ -575,3 +723,24 @@ relationships:
   - {from: EA, to: DI,  label: represented by,                rel_type: realization,  cardinality: "1:1"}
   - {from: CAP, to: BF, label: grouped by,                   rel_type: aggregation,  cardinality: "0..N:1"}
   - {from: BF, to: OU,  label: owned by,                     rel_type: governance,   cardinality: "1:1"}
+
+  # --- v0.3.0 additions (ADR-0003) ---
+  - {from: EP, to: EA,  label: hosts,                        rel_type: aggregation,  cardinality: "1:0..N"}
+  - {from: EP, to: API, label: exposed via,                   rel_type: realization,  cardinality: "1:0..N"}
+  - {from: RSK, to: CAP, label: threatens,                    rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: RSK, to: SF,  label: threatens,                    rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: CTL, to: RSK, label: mitigates,                    rel_type: governance,   cardinality: "0..N:0..N"}
+  - {from: REG, to: CTL, label: mandates,                     rel_type: governance,   cardinality: "1:0..N"}
+  - {from: AIM, to: RSK, label: 'subject to (governed_by)',   rel_type: governance,   cardinality: "0..N:0..N"}
+  - {from: SIG, to: EXP, label: triggers,                     rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: EXP, to: II,  label: informs,                      rel_type: dependency,   cardinality: "0..N:0..1"}
+  - {from: TRE, to: EXP, label: evaluated via,                 rel_type: dependency,   cardinality: "1:0..N"}
+  - {from: TRE, to: TEC, label: graduates to,                  rel_type: realization,  cardinality: "0..1:0..1"}
+  - {from: SKL, to: ROL, label: required by,                   rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: ROL, to: AC,  label: fulfilled by,                   rel_type: realization,  cardinality: "1:0..N"}
+  - {from: CHI, to: OU,  label: targets,                       rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: CHI, to: II,  label: funded by,                     rel_type: governance,   cardinality: "0..N:0..1"}
+  - {from: MDP, to: AIM, label: instance of,                   rel_type: realization,  cardinality: "0..N:1"}
+  - {from: MDP, to: APC, label: hosted by,                     rel_type: composition,  cardinality: "0..N:1"}
+  - {from: MFS, to: EVT, label: derived from,                   rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: MFS, to: AIM, label: triggers retraining of,          rel_type: dependency,   cardinality: "0..N:0..N"}
