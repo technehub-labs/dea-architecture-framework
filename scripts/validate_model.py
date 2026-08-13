@@ -1,14 +1,26 @@
 #!/usr/bin/env python3
 """Validate model/opendeam-model.yaml — schema + referential integrity.
 
+v0.2.0 (ADR-0002): measurement is an orthogonal dimension, not a layer.
+Entities without a `layer` are dimension entities (e.g. MTR) and are checked
+against scope_layers rules instead of layer/building_block containment.
+
 Checks beyond JSON Schema:
   1. Layer IDs are unique and sequential (L1..Ln).
   2. class_alias and entity_id are globally unique.
-  3. Every entity's layer exists; every entity's building_block exists
-     INSIDE that layer (not just anywhere).
+  3. Non-dimension entities: layer exists; building_block exists INSIDE that
+     layer. Dimension entities (no layer): must declare scope_layers (valid
+     layer IDs) and must NOT declare building_block.
   4. Every relationship endpoint resolves to a declared class_alias.
   5. Entities with status 'existing'/'scaffold' must declare a catalog_repo.
-  6. VERSION file matches model.version.
+  6. measured_by targets exist and are dimension entities; the measured
+     entity's layer must be within the metric's scope_layers.
+  7. specializes targets exist and are abstract:true; the parent's
+     realized_in_layers must include the subclass's layer. abstract:true
+     entities must declare realized_in_layers.
+  8. A catalog_repo shared by multiple entities requires every sharer to
+     declare a discriminator (ADR-0002 D6).
+  9. VERSION file matches model.version.
 
 Run: python3 scripts/validate_model.py
 Exit: 0 = clean, 1 = violations found.
@@ -56,16 +68,32 @@ def main() -> int:
         errors.append(f"integrity: duplicate class_alias {dup}")
     for dup in {i for i in ids if ids.count(i) > 1}:
         errors.append(f"integrity: duplicate entity_id {dup}")
+    by_alias = {e["class_alias"]: e for e in entities}
 
-    # 3. Entity layer + building_block (must live INSIDE the entity's layer)
+    # 3. Entity layer + building_block (dimension entities exempt)
     for e in entities:
+        if "layer" not in e:
+            # Dimension entity (ADR-0002 D1 — e.g. Performance Metric)
+            if "building_block" in e:
+                errors.append(f"integrity: {e['class_alias']} is a dimension entity but declares building_block")
+            if not e.get("scope_layers"):
+                errors.append(f"integrity: {e['class_alias']} is a dimension entity and must declare scope_layers")
+            else:
+                for sl in e["scope_layers"]:
+                    if sl not in layer_ids:
+                        errors.append(f"integrity: {e['class_alias']} scope_layers references unknown layer {sl}")
+            continue
         if e["layer"] not in bb_by_layer:
             errors.append(f"integrity: {e['class_alias']} references unknown layer {e['layer']}")
+        elif "building_block" not in e:
+            errors.append(f"integrity: {e['class_alias']} has layer {e['layer']} but no building_block")
         elif e["building_block"] not in bb_by_layer[e["layer"]]:
             errors.append(
                 f"integrity: {e['class_alias']} building_block {e['building_block']} "
                 f"is not inside layer {e['layer']}"
             )
+        if e.get("scope_layers"):
+            errors.append(f"integrity: {e['class_alias']} declares scope_layers but is layer-allocated (dimension-only field)")
 
     # 4. Relationship endpoints
     valid = set(aliases)
@@ -79,22 +107,73 @@ def main() -> int:
         if e["status"] in ("existing", "scaffold") and not e.get("catalog_repo"):
             errors.append(f"integrity: {e['class_alias']} status={e['status']} requires catalog_repo")
 
-    # 6. VERSION matches model.version
+    # 6. measured_by -> dimension entity; measured layer within metric scope
+    for e in entities:
+        for target in e.get("measured_by", []):
+            t = by_alias.get(target)
+            if not t:
+                errors.append(f"integrity: {e['class_alias']} measured_by unknown alias {target}")
+                continue
+            if "layer" in t:
+                errors.append(f"integrity: {e['class_alias']} measured_by {target} but {target} is not a dimension entity")
+            elif "layer" in e and t.get("scope_layers") and e["layer"] not in t["scope_layers"]:
+                errors.append(
+                    f"integrity: {e['class_alias']} (layer {e['layer']}) measured_by {target} "
+                    f"whose scope_layers {t['scope_layers']} exclude it"
+                )
+
+    # 7. specializes / abstract / realized_in_layers
+    for e in entities:
+        if e.get("abstract") and not e.get("realized_in_layers"):
+            errors.append(f"integrity: {e['class_alias']} is abstract but declares no realized_in_layers")
+        for rl in e.get("realized_in_layers", []):
+            if rl not in layer_ids:
+                errors.append(f"integrity: {e['class_alias']} realized_in_layers references unknown layer {rl}")
+        parent_ref = e.get("specializes")
+        if parent_ref:
+            parent = by_alias.get(parent_ref)
+            if not parent:
+                errors.append(f"integrity: {e['class_alias']} specializes unknown alias {parent_ref}")
+            else:
+                if not parent.get("abstract"):
+                    errors.append(f"integrity: {e['class_alias']} specializes {parent_ref} which is not abstract:true")
+                elif "layer" in e and parent.get("realized_in_layers") and e["layer"] not in parent["realized_in_layers"]:
+                    errors.append(
+                        f"integrity: {e['class_alias']} (layer {e['layer']}) specializes {parent_ref} "
+                        f"whose realized_in_layers {parent['realized_in_layers']} exclude it"
+                    )
+
+    # 8. Shared catalog_repo requires discriminator on every sharer (D6)
+    repo_users: dict[str, list[str]] = {}
+    for e in entities:
+        if e.get("catalog_repo"):
+            repo_users.setdefault(e["catalog_repo"], []).append(e["class_alias"])
+    for repo, users in repo_users.items():
+        if len(users) > 1:
+            for e in entities:
+                if e.get("catalog_repo") == repo and not e.get("discriminator"):
+                    errors.append(
+                        f"integrity: {e['class_alias']} shares catalog_repo {repo} with "
+                        f"{[u for u in users if u != e['class_alias']]} but declares no discriminator (ADR-0002 D6)"
+                    )
+
+    # 9. VERSION matches model.version
     if VERSION.exists() and VERSION.read_text().strip() != model["model"]["version"]:
         errors.append(
             f"integrity: VERSION file ({VERSION.read_text().strip()}) "
             f"!= model.version ({model['model']['version']})"
         )
 
+    n_bbs = sum(len(l["building_blocks"]) for l in layers)
+    n_dims = sum(1 for e in entities if "layer" not in e)
     if errors:
         print("OpenDEAM model validation FAILED:")
         for e in errors:
             print(f"  ✗ {e}")
         return 1
     print(
-        f"OpenDEAM model OK — {len(layers)} layers, "
-        f"{sum(len(l['building_blocks']) for l in layers)} building blocks, "
-        f"{len(entities)} entities, {len(rels)} relationships "
+        f"OpenDEAM model OK — {len(layers)} layers, {n_bbs} building blocks, "
+        f"{len(entities)} entities ({n_dims} dimension), {len(rels)} relationships "
         f"(v{model['model']['version']})"
     )
     return 0
