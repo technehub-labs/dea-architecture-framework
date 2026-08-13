@@ -10,8 +10,8 @@ done, what is live, and what is earmarked for future action**.
 |---|---|---|
 | 0 | T0: ADR-0003 accepted, model v0.3.0 (49 entities, 27 BBs, 56 rels, +ai-automation-governance dimension), `governed_by` schema+validator, D6 discriminator check downgraded to warning (user decision: models land as authored) | tag `v0.3.0` |
 | 1 | T1 dea-metamodel: graph regen, 12 new entity schemas, TS/TTL/pydantic regen | PR (see repo) |
-| 2 | T3 viewers: new entities flow via sync chain | live URLs |
-| 3 | T2: 12 proposed-status catalog repos scaffolded foundation-first (user decision 2b) | repo list |
+| 2 | T3 viewers: new entities flow via sync chain — Pages graph v0.3.0 (49 ent / 56 rels), SVG 49 markers, viewer bundle verified live | live URLs |
+| 3 | T2: 11 catalog repos scaffolded foundation-first (12 entities; MDP+MFS share `dea-catalog-model-deployments`), each with README entity detail + pointer + `validate-allocation` CI — 11/11 green | repo list |
 
 ## Executed phases (ADR-0002 rollout, Aug 13 2026)
 
