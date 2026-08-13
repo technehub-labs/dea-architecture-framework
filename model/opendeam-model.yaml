@@ -1,644 +1,577 @@
 # ═══════════════════════════════════════════════════════════════════════════
-# OpenDEAM — Open Digital Enterprise Architecture Model  (v0.1.0)
+# OpenDEAM — Open Digital Enterprise Architecture Model (v0.2.0)
 #
 # This file is the SINGLE SOURCE OF TRUTH for the DEA architecture:
-#   layers → building blocks → entity allocation → relationships.
+# layers → building blocks → entity allocation → relationships.
+#
+# CHANGE FROM v0.1.0 — see docs/ADRs/ADR-0002-opendeam-v0.2.0-structural-upgrade.md
+#   - Measurement (L6) demoted from a numbered layer to a cross-cutting
+#     orthogonal_allocator, parallel to the ECF matrix.
+#   - Collaboration Agreement moved L2 -> L1 (L1-agreements building block).
+#   - Entities gain: abstract, specializes, discriminator, ecf_coordinates, measured_by.
+#   - Relationships gain: rel_type (controlled vocabulary), cardinality.
+#     style is now DEPRECATED — derive it from rel_type in viewers.
+#   - status lifecycle formally defined (see terminology.lifecycle).
 #
 # Edit rules:
-#   - Structural changes (new/removed layer, new dimension, entity re-allocation)
-#     require an ADR in docs/ADRs/ and a minor version bump.
+#   - Structural changes (new/removed layer, new dimension, entity re-allocation,
+#     backward status transition, retirement) require an ADR in docs/ADRs/ and a
+#     minor version bump.
 #   - Additive changes (new entity in an existing building block, new
-#     relationship) require a PR and a patch version bump.
+#     relationship, forward status transition) require a PR and a patch version bump.
 #   - CI (validate_model.py) must pass. Consumers pin this file by tag.
 # ═══════════════════════════════════════════════════════════════════════════
+
 model:
   name: OpenDEAM — Open Digital Enterprise Architecture Model
   id: opendeam
-  version: 0.1.0
+  version: 0.2.0
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
-  supersedes: dea-metamodel v2.0.0-alpha 5-layer allocation (viewer/entity-graph.json)
+  supersedes: opendeam-model.yaml v0.1.0 (see ADR-0002)
+
 terminology:
-  layer: Architecture layer (L1–L6). Defined exclusively by this model; the word 'Layer' anywhere in the org refers to these
-    six.
-  tier: Repository-stack position (T0–T3). NOT an architecture layer. Catalog READMEs must use 'Tier', never 'Layer', for
-    stack position.
+  layer: >
+    Architecture layer (L1–L5). Defined exclusively by this model; the word 'Layer' anywhere in
+    the org refers to these five. Measurement is NOT a layer as of v0.2.0 — see orthogonal_allocators.measurement-dimension.
   building_block: Named grouping of entities within a layer — the architecture's components at first-level granularity.
-  entity: A first-level architecture object allocated to exactly one layer and one building block (MECE).
+  entity: A first-level architecture object allocated to exactly one layer and one building block (MECE), unless abstract=true (see below).
+  abstract_entities: >
+    An entity may be marked abstract:true if it is a parent type whose concrete subclasses are
+    realized in a different layer than the parent's own layer (declared via realized_in_layers).
+    Concrete subclasses declare specializes: <parent entity_id> and are allocated normally (single layer, MECE).
+  shared_catalog_convention: >
+    A catalog_repo MAY be shared by multiple entities only if every entity sharing it declares a
+    discriminator field naming the entity property that distinguishes its instances within that
+    repo (mirrors the component_type pattern used by Solution Component subclasses).
+  lifecycle:
+    states_ordered: [proposed, planned, scaffold, existing, deprecated, retired]
+    forward_transition: Requires a PR and a patch version bump.
+    backward_transition_or_retirement: Requires an ADR and a minor version bump.
+
 architecture:
   layers:
-  - id: L1
-    name: Ecosystem & Value Network
-    qualifier: External
-    color: '#2DD4BF'
-    derivation: '"with its environment" — the exchange surface between the bounded enterprise and its ecosystem.'
-    building_blocks:
-    - id: L1-external-parties
-      name: External Parties
-    - id: L1-value-flows
-      name: Value Flows
-    - id: L1-experience-points
-      name: Experience Points
-  - id: L2
-    name: Strategic & Governance
-    qualifier: Intent & Rules
-    color: '#FBBF24'
-    derivation: '"persists" — intent to persist expressed as objectives, and the rules that constrain behaviour.'
-    building_blocks:
-    - id: L2-intent
-      name: Strategic Intent
-    - id: L2-rules-guidance
-      name: Rules & Guidance
-    - id: L2-reusable-knowledge
-      name: Reusable Knowledge
-    - id: L2-semantics
-      name: Semantics & Classification
-    - id: L2-architecture-views
-      name: Architecture Views
-    - id: L2-agreements
-      name: Collaboration Agreements
-  - id: L3
-    name: Business Operating Model
-    qualifier: Internal
-    color: '#38BDF8'
-    derivation: '"bounded entity" — how the enterprise internally organises and performs work.'
-    building_blocks:
-    - id: L3-work-organization
-      name: Work Organization
-    - id: L3-value-delivery
-      name: Value Delivery
-    - id: L3-business-information
-      name: Business Information
-    - id: L3-service-offerings
-      name: Service Offerings
-  - id: L4
-    name: Digital & Intelligence
-    qualifier: Data & Brain
-    color: '#A78BFA'
-    derivation: '"exchanging value" (digital plane) — the digital representation of work and the intelligence applied to it.'
-    building_blocks:
-    - id: L4-digital-trust
-      name: Digital Trust
-    - id: L4-data-foundation
-      name: Data Foundation
-    - id: L4-data-products
-      name: Data Products
-    - id: L4-intelligence
-      name: Intelligence
-    - id: L4-events
-      name: Events & Streams
-  - id: L5
-    name: Technology & Execution
-    qualifier: Systems & Infra
-    color: '#FB7185'
-    derivation: '"persists" (execution plane) — the substrate that executes and hosts the digital plane.'
-    building_blocks:
-    - id: L5-systems
-      name: Systems & Applications
-    - id: L5-integration
-      name: Integration
-    - id: L5-infrastructure
-      name: Infrastructure & Platforms
-    - id: L5-technology
-      name: Technology Portfolio
-  - id: L6
-    name: Measurement
-    qualifier: Cross-Cutting
-    color: '#34D399'
-    derivation: persistence over time requires feedback — measurement cuts across all layers.
-    building_blocks:
-    - id: L6-metrics
-      name: Metrics & KPIs
-orthogonal_allocators:
-- id: ecf-matrix
-  name: Enterprise Concept Framework matrix (7×7)
-  owner_repo: technehub-labs/dea-metaframework
-  kind: city-block grid (domain × stage)
-  description: Orthogonal allocation structure owned by dea-metaframework. Where OpenDEAM answers 'which architecture layer
-    does this object belong to', the ECF matrix answers 'which city block (domain × lifecycle stage) does this object operate
-    in'. Entities may carry ecf_coordinates referencing matrix cells (e.g. Business Capability, process elements). OpenDEAM
-    references the matrix; it does not redefine it.
-  reference: https://github.com/technehub-labs/dea-metaframework/blob/main/framework/matrix.md
+    - id: L1
+      name: Ecosystem & Value Network
+      qualifier: External
+      color: '#2DD4BF'
+      derivation: '"with its environment" — the exchange surface between the bounded enterprise and its ecosystem.'
+      building_blocks:
+        - id: L1-external-parties
+          name: External Parties
+        - id: L1-value-flows
+          name: Value Flows
+        - id: L1-experience-points
+          name: Experience Points
+        - id: L1-agreements
+          name: Collaboration Agreements
+          note: Moved from L2 in v0.2.0 (ADR-0002 D2) — an agreement is a feature of the exchange surface, not internal governance.
+
+    - id: L2
+      name: Strategic & Governance
+      qualifier: Intent & Rules
+      color: '#FBBF24'
+      derivation: '"persists" — intent to persist expressed as objectives, and the rules that constrain behaviour.'
+      building_blocks:
+        - id: L2-intent
+          name: Strategic Intent
+        - id: L2-rules-guidance
+          name: Rules & Guidance
+        - id: L2-reusable-knowledge
+          name: Reusable Knowledge
+        - id: L2-semantics
+          name: Semantics & Classification
+        - id: L2-architecture-views
+          name: Architecture Views
+
+    - id: L3
+      name: Business Operating Model
+      qualifier: Internal
+      color: '#38BDF8'
+      derivation: '"bounded entity" — how the enterprise internally organises and performs work.'
+      building_blocks:
+        - id: L3-work-organization
+          name: Work Organization
+        - id: L3-value-delivery
+          name: Value Delivery
+        - id: L3-business-information
+          name: Business Information
+        - id: L3-service-offerings
+          name: Service Offerings
+
+    - id: L4
+      name: Digital & Intelligence
+      qualifier: Data & Brain
+      color: '#A78BFA'
+      derivation: '"exchanging value" (digital plane) — the digital representation of work and the intelligence applied to it.'
+      building_blocks:
+        - id: L4-digital-trust
+          name: Digital Trust
+        - id: L4-data-foundation
+          name: Data Foundation
+        - id: L4-data-products
+          name: Data Products
+        - id: L4-intelligence
+          name: Intelligence
+        - id: L4-events
+          name: Events & Streams
+
+    - id: L5
+      name: Technology & Execution
+      qualifier: Systems & Infra
+      color: '#FB7185'
+      derivation: '"persists" (execution plane) — the substrate that executes and hosts the digital plane.'
+      building_blocks:
+        - id: L5-systems
+          name: Systems & Applications
+        - id: L5-integration
+          name: Integration
+        - id: L5-infrastructure
+          name: Infrastructure & Platforms
+        - id: L5-technology
+          name: Technology Portfolio
+
+  orthogonal_allocators:
+    - id: ecf-matrix
+      name: Enterprise Concept Framework matrix (7×7)
+      owner_repo: technehub-labs/dea-metaframework
+      kind: city-block grid (domain × stage)
+      description: >
+        Orthogonal allocation structure owned by dea-metaframework. Entities may carry
+        ecf_coordinates referencing matrix cells (e.g. Business Capability, Business Object).
+        OpenDEAM references the matrix; it does not redefine it.
+      reference: https://github.com/technehub-labs/dea-metaframework/blob/main/framework/matrix.md
+
+    - id: measurement-dimension
+      name: Measurement Dimension
+      owner_repo: technehub-labs/dea-architecture-framework
+      kind: cross-cutting evaluative overlay (not a layer as of v0.2.0)
+      description: >
+        Replaces the former L6 layer (see ADR-0002 D1). Any entity in L1–L5 may declare
+        measured_by: [metric entity_ids]. Metric entities declare scope_layers to state which
+        layers they are permitted to evaluate. This models "persistence over time requires
+        feedback" as a dimension applied across the architecture rather than a sixth layer.
+      reference: null
+
 allocation:
   entities:
-  - entity_id: dea:entity-ecosystem-actor
-    class_alias: EA
-    display_name: Ecosystem Actor
-    layer: L1
-    building_block: L1-external-parties
-    status: planned
-    catalog_repo: null
-    description: 'External party that actively exchanges value with the enterprise — supplier, customer, regulator, partner.
-      Boundary rule vs Stakeholder: an Ecosystem Actor transacts (participates in a Value Exchange); a Stakeholder is any
-      engaged or affected party, transacting or not.'
-  - entity_id: dea:entity-journey-touchpoint
-    class_alias: JT
-    display_name: Journey Touchpoint
-    layer: L1
-    building_block: L1-experience-points
-    status: planned
-    catalog_repo: dea-catalog-journey-touchpoints
-    description: A point of interaction on a customer or user journey, across a specific channel.
-    prior_layer_v2: L2
-  - entity_id: dea:entity-stakeholder
-    class_alias: SH
-    display_name: Stakeholder
-    layer: L1
-    building_block: L1-external-parties
-    status: scaffold
-    catalog_repo: dea-catalog-stakeholders
-    description: An external or affected party whose relationship with the enterprise is engaged in or affected by enterprise
-      processes. Stakeholders are distinct from Actors (internal performers).
-  - entity_id: dea:entity-value-exchange
-    class_alias: VE
-    display_name: Value Exchange
-    layer: L1
-    building_block: L1-value-flows
-    status: planned
-    catalog_repo: null
-    description: A flow of value between the enterprise and an ecosystem actor — information, goods, or funds; inbound or
-      outbound.
-  - entity_id: dea:entity-architecture-pattern
-    class_alias: AP
-    display_name: Architecture Pattern
-    layer: L2
-    building_block: L2-reusable-knowledge
-    status: planned
-    catalog_repo: dea-catalog-patterns
-    description: A reusable architecture pattern (e.g. API Gateway, Event Sourcing, CQRS) that resolves a recurring design
-      problem.
-    prior_layer_v2: L1
-  - entity_id: dea:entity-collaboration-agreement
-    class_alias: CA
-    display_name: Collaboration Agreement
-    layer: L2
-    building_block: L2-agreements
-    status: planned
-    catalog_repo: null
-    description: Terms governing cooperation with an ecosystem actor — cooperative or mandated.
-  - entity_id: dea:entity-glossary-term
-    class_alias: GT
-    display_name: Glossary Term
-    layer: L2
-    building_block: L2-semantics
-    status: planned
-    catalog_repo: dea-catalog-glossary
-    description: A canonical business or technical term with a controlled definition, used to disambiguate cross-domain communication.
-    prior_layer_v2: L1
-  - entity_id: dea:entity-investment-initiative
-    class_alias: II
-    display_name: Investment Initiative
-    layer: L2
-    building_block: L2-intent
-    status: planned
-    catalog_repo: dea-catalog-investment-initiatives
-    description: A funded programme of work that realises one or more strategic objectives.
-    prior_layer_v2: L1
-  - entity_id: dea:entity-principle
-    class_alias: PR
-    display_name: Principle
-    layer: L2
-    building_block: L2-rules-guidance
-    status: planned
-    catalog_repo: dea-catalog-principles
-    description: An architectural guiding principle (e.g. API-first, data sovereignty) that informs all downstream decisions.
-    prior_layer_v2: L1
-  - entity_id: dea:entity-reference-model
-    class_alias: RM
-    display_name: Reference Model
-    layer: L2
-    building_block: L2-reusable-knowledge
-    status: planned
-    catalog_repo: dea-catalog-reference-models
-    description: A reference architecture model (e.g. Digital Platform, Integration Hub) that provides a reusable template
-      for solution design.
-  - entity_id: dea:entity-strategic-objective
-    class_alias: SO
-    display_name: Strategic Objective
-    layer: L2
-    building_block: L2-intent
-    status: planned
-    catalog_repo: dea-catalog-strategic-objectives
-    description: A high-level enterprise outcome the organisation seeks to achieve.
-    prior_layer_v2: L1
-  - entity_id: dea:entity-standard
-    class_alias: STD
-    display_name: Standard
-    layer: L2
-    building_block: L2-rules-guidance
-    status: planned
-    catalog_repo: dea-catalog-standards
-    description: A referenced industry standard or framework (TOGAF, Zachman, ISO, IEEE) the enterprise aligns to.
-    prior_layer_v2: L1
-  - entity_id: dea:entity-taxonomy-node
-    class_alias: TXN
-    display_name: Taxonomy Node
-    layer: L2
-    building_block: L2-semantics
-    status: planned
-    catalog_repo: dea-catalog-taxonomy
-    description: A node in a controlled vocabulary taxonomy. Hierarchical via parent_node/child_nodes. Top-level entity.
-  - entity_id: dea:entity-viewpoint
-    class_alias: VP
-    display_name: Viewpoint
-    layer: L2
-    building_block: L2-architecture-views
-    status: planned
-    catalog_repo: dea-web-viewer
-    description: A tailored perspective on the metamodel for a specific stakeholder concern (e.g. capability map, application
-      landscape, technology inventory). Renders a curated subset of entities + relationships.
-    prior_layer_v2: L1
-  - entity_id: dea:entity-actor
-    class_alias: AC
-    display_name: Actor
-    layer: L3
-    building_block: L3-work-organization
-    status: scaffold
-    catalog_repo: dea-catalog-actors
-    description: A performer of enterprise processes — human, team, system, or AI agent. Actors are internal performers; external
-      or affected parties are Stakeholders.
-    prior_layer_v2: L1
-  - entity_id: dea:entity-business-function
-    class_alias: BF
-    display_name: Business Function
-    layer: L3
-    building_block: L3-work-organization
-    status: planned
-    catalog_repo: null
-    description: A grouping of business capabilities by organisational function; owned by an organizational unit.
-  - entity_id: dea:entity-business-object
-    class_alias: BO
-    display_name: Business Object
-    layer: L3
-    building_block: L3-business-information
-    status: scaffold
-    catalog_repo: dea-catalog-business-objects
-    description: A real-world entity of interest to the business (e.g. Customer, Order). The atom of the ECF matrix — every
-      (domain, stage) cell contains the business objects currently in that lifecycle state. v1.0.0-alpha.
-    prior_layer_v2: L2
-  - entity_id: dea:entity-process
-    class_alias: BP
-    display_name: Business Process
-    layer: L3
-    building_block: L3-value-delivery
-    status: scaffold
-    catalog_repo: dea-catalog-processes
-    description: A structured set of activities that produces a defined outcome. Classified by intent (operational/support/management)
-      and audience (ECF domain). An enterprise IS its processes; foundational (L1). v3.0.0-alpha.
-    prior_layer_v2: L1
-  - entity_id: dea:entity-business-service
-    class_alias: BS
-    display_name: Business Service
-    layer: L3
-    building_block: L3-service-offerings
-    status: existing
-    catalog_repo: dea-catalog-digital-business-service-factory
-    description: A service exposed to the business or to external consumers. Composite of capabilities, realised by solution
-      components. Hosted in DBSF.
-    prior_layer_v2: L2
-  - entity_id: dea:entity-capability
-    class_alias: CAP
-    display_name: Business Capability
-    layer: L3
-    building_block: L3-value-delivery
-    status: planned
-    catalog_repo: dea-catalog-business-capabilities
-    description: An ability the business possesses or requires to deliver value. Maps to ECF coordinates (Domain, Stage).
-      An enterprise IS its capabilities.
-    prior_layer_v2: L2
-  - entity_id: dea:entity-organizational-unit
-    class_alias: OU
-    display_name: Organizational Unit
-    layer: L3
-    building_block: L3-work-organization
-    status: scaffold
-    catalog_repo: dea-catalog-organizational-units
-    description: A unit of organisation (team, division, business unit) that owns capabilities, runs processes, and is custodian
-      for business objects. v1.0.0-alpha.
-    prior_layer_v2: L2
-  - entity_id: dea:entity-solution-component
-    class_alias: SC
-    display_name: Solution Component
-    layer: L3
-    building_block: L3-service-offerings
-    status: existing
-    catalog_repo: dea-catalog-digital-business-service-factory
-    description: A software or infrastructure component that realises one or more capabilities. The three component subClasses
-      (ApplicationComponent, InfrastructureComponent, IntegrationComponent) form a discriminated union by component_type.
-      Hosted in DBSF.
-    prior_layer_v2: L2
-  - entity_id: dea:entity-value-stream
-    class_alias: VS
-    display_name: Value Stream
-    layer: L3
-    building_block: L3-value-delivery
-    status: planned
-    catalog_repo: dea-catalog-value-streams
-    description: An end-to-end collection of value-creating activities spanning multiple capabilities and processes.
-    prior_layer_v2: L2
-  - entity_id: dea:entity-ai-ml-model
-    class_alias: AIM
-    display_name: AI/ML Model
-    layer: L4
-    building_block: L4-intelligence
-    status: planned
-    catalog_repo: dea-catalog-ai-ml-models
-    description: A machine-learning or AI model that augments or replaces human decision-making within a capability.
-    prior_layer_v2: L3
-  - entity_id: dea:entity-data-entity
-    class_alias: DE
-    display_name: Data Entity
-    layer: L4
-    building_block: L4-data-foundation
-    status: planned
-    catalog_repo: dea-catalog-data-entities
-    description: A persistent data structure (table, document, graph node) that realises one or more business objects.
-  - entity_id: dea:entity-digital-identity
-    class_alias: DI
-    display_name: Digital Identity
-    layer: L4
-    building_block: L4-digital-trust
-    status: planned
-    catalog_repo: dea-catalog-digital-identities
-    description: A digital representation (twin) of a stakeholder or actor for authentication, authorisation, and traceability
-      purposes.
-    prior_layer_v2: L3
-  - entity_id: dea:entity-data-product
-    class_alias: DP
-    display_name: Data Product
-    layer: L4
-    building_block: L4-data-products
-    status: planned
-    catalog_repo: dea-catalog-data-products
-    description: A curated, discoverable, governed dataset or data service with clear ownership and SLAs (data-mesh pattern).
-    prior_layer_v2: L3
-  - entity_id: dea:entity-event
-    class_alias: EVT
-    display_name: Event
-    layer: L4
-    building_block: L4-events
-    status: planned
-    catalog_repo: dea-catalog-event-streams
-    description: A significant state change or business occurrence that business objects participate in. Forms the event-driven
-      integration backbone.
-    prior_layer_v2: L3
-  - entity_id: dea:entity-information-class
-    class_alias: IC
-    display_name: Information Class
-    layer: L4
-    building_block: L4-data-foundation
-    status: planned
-    catalog_repo: dea-catalog-information-classes
-    description: A classification of information by sensitivity (public, internal, confidential, restricted) and regulatory
-      regime (PII, PHI, PCI).
-  - entity_id: dea:entity-application-component
-    class_alias: APC
-    display_name: Application Component
-    layer: L5
-    building_block: L5-systems
-    status: planned
-    catalog_repo: dea-catalog-application-components
-    description: A deployable unit of an application system (service, batch job, scheduled task). SubClass of SolutionComponent
-      with component_type='application'.
-    prior_layer_v2: L4
-  - entity_id: dea:entity-api
-    class_alias: API
-    display_name: API
-    layer: L5
-    building_block: L5-integration
-    status: planned
-    catalog_repo: dea-catalog-api-contracts
-    description: A contract defining the request/response shape of a service interface. The published surface of an application
-      component.
-    prior_layer_v2: L4
-  - entity_id: dea:entity-infrastructure-component
-    class_alias: IFC
-    display_name: Infrastructure Component
-    layer: L5
-    building_block: L5-infrastructure
-    status: planned
-    catalog_repo: dea-catalog-application-components
-    description: An IaC-managed resource (compute, network, storage) that hosts solution components. SubClass of SolutionComponent
-      with component_type='infrastructure'.
-    prior_layer_v2: L4
-  - entity_id: dea:entity-integration-component
-    class_alias: IGC
-    display_name: Integration Component
-    layer: L5
-    building_block: L5-integration
-    status: planned
-    catalog_repo: dea-catalog-application-components
-    description: A component that bridges systems via APIs, queues, file transfers. SubClass of SolutionComponent with component_type='integration'.
-    prior_layer_v2: L4
-  - entity_id: dea:entity-platform-service
-    class_alias: PS
-    display_name: Platform Service
-    layer: L5
-    building_block: L5-infrastructure
-    status: planned
-    catalog_repo: dea-catalog-platform-services
-    description: A shared infrastructure or runtime service consumed by multiple application components (databases, message
-      brokers, identity providers).
-    prior_layer_v2: L4
-  - entity_id: dea:entity-system-function
-    class_alias: SF
-    display_name: System Function
-    layer: L5
-    building_block: L5-systems
-    status: planned
-    catalog_repo: dea-catalog-system-functions
-    description: A functional capability exposed by a single application or system (the atomic level of software decomposition).
-    prior_layer_v2: L4
-  - entity_id: dea:entity-technology
-    class_alias: TEC
-    display_name: Technology
-    layer: L5
-    building_block: L5-technology
-    status: planned
-    catalog_repo: dea-catalog-patterns
-    description: A technology choice (language, framework, runtime, database) governed via Standards + Principles. Top-level
-      entity (subClassOf dea:Entity).
-    prior_layer_v2: L4
-  - entity_id: dea:entity-metric
-    class_alias: MTR
-    display_name: Performance Metric
-    layer: L6
-    building_block: L6-metrics
-    status: existing
-    catalog_repo: dea-catalog-metrics
-    description: 'A measured quantity used to evaluate outcomes against targets. MECE taxonomy: kpi | health | maturity |
-      performance | adoption | compliance | risk.'
-    prior_layer_v2: L5
-  repository_tiers:
+    - entity_id: dea:entity-ecosystem-actor
+      class_alias: EA
+      display_name: Ecosystem Actor
+      layer: L1
+      building_block: L1-external-parties
+      status: planned
+      catalog_repo: null
+      description: 'External party that actively exchanges value with the enterprise — supplier, customer, regulator, partner.'
+
+    - entity_id: dea:entity-journey-touchpoint
+      class_alias: JT
+      display_name: Journey Touchpoint
+      layer: L1
+      building_block: L1-experience-points
+      status: planned
+      catalog_repo: dea-catalog-journey-touchpoints
+      description: A point of interaction on a customer or user journey, across a specific channel.
+
+    - entity_id: dea:entity-stakeholder
+      class_alias: SH
+      display_name: Stakeholder
+      layer: L1
+      building_block: L1-external-parties
+      status: scaffold
+      catalog_repo: dea-catalog-stakeholders
+      description: An external or affected party whose relationship with the enterprise is engaged in or affected by enterprise processes.
+
+    - entity_id: dea:entity-value-exchange
+      class_alias: VE
+      display_name: Value Exchange
+      layer: L1
+      building_block: L1-value-flows
+      status: planned
+      catalog_repo: null
+      description: A flow of value between the enterprise and an ecosystem actor — information, goods, or funds; inbound or outbound.
+
+    - entity_id: dea:entity-collaboration-agreement
+      class_alias: CA
+      display_name: Collaboration Agreement
+      layer: L1
+      building_block: L1-agreements
+      status: planned
+      catalog_repo: null
+      description: Terms governing cooperation with an ecosystem actor — cooperative or mandated.
+      migration_note: Reallocated from L2-agreements to L1-agreements in v0.2.0 (ADR-0002 D2).
+
+    - entity_id: dea:entity-architecture-pattern
+      class_alias: AP
+      display_name: Architecture Pattern
+      layer: L2
+      building_block: L2-reusable-knowledge
+      status: planned
+      catalog_repo: dea-catalog-patterns
+      discriminator: pattern_kind
+      description: A reusable architecture pattern (e.g. API Gateway, Event Sourcing, CQRS) that resolves a recurring design problem.
+
+    - entity_id: dea:entity-glossary-term
+      class_alias: GT
+      display_name: Glossary Term
+      layer: L2
+      building_block: L2-semantics
+      status: planned
+      catalog_repo: dea-catalog-glossary
+      description: A canonical business or technical term with a controlled definition.
+
+    - entity_id: dea:entity-investment-initiative
+      class_alias: II
+      display_name: Investment Initiative
+      layer: L2
+      building_block: L2-intent
+      status: planned
+      catalog_repo: dea-catalog-investment-initiatives
+      description: A funded programme of work that realises one or more strategic objectives.
+
+    - entity_id: dea:entity-principle
+      class_alias: PR
+      display_name: Principle
+      layer: L2
+      building_block: L2-rules-guidance
+      status: planned
+      catalog_repo: dea-catalog-principles
+      description: An architectural guiding principle (e.g. API-first, data sovereignty).
+
+    - entity_id: dea:entity-reference-model
+      class_alias: RM
+      display_name: Reference Model
+      layer: L2
+      building_block: L2-reusable-knowledge
+      status: planned
+      catalog_repo: dea-catalog-reference-models
+      description: A reference architecture model providing a reusable template for solution design.
+
+    - entity_id: dea:entity-strategic-objective
+      class_alias: SO
+      display_name: Strategic Objective
+      layer: L2
+      building_block: L2-intent
+      status: planned
+      catalog_repo: dea-catalog-strategic-objectives
+      description: A high-level enterprise outcome the organisation seeks to achieve.
+
+    - entity_id: dea:entity-standard
+      class_alias: STD
+      display_name: Standard
+      layer: L2
+      building_block: L2-rules-guidance
+      status: planned
+      catalog_repo: dea-catalog-standards
+      description: A referenced industry standard or framework (TOGAF, Zachman, ISO, IEEE) the enterprise aligns to.
+
+    - entity_id: dea:entity-taxonomy-node
+      class_alias: TXN
+      display_name: Taxonomy Node
+      layer: L2
+      building_block: L2-semantics
+      status: planned
+      catalog_repo: dea-catalog-taxonomy
+      description: A node in a controlled vocabulary taxonomy. Hierarchical via parent_node/child_nodes.
+
+    - entity_id: dea:entity-viewpoint
+      class_alias: VP
+      display_name: Viewpoint
+      layer: L2
+      building_block: L2-architecture-views
+      status: planned
+      catalog_repo: dea-web-viewer
+      description: A tailored perspective on the metamodel for a specific stakeholder concern.
+
+    - entity_id: dea:entity-actor
+      class_alias: AC
+      display_name: Actor
+      layer: L3
+      building_block: L3-work-organization
+      status: scaffold
+      catalog_repo: dea-catalog-actors
+      description: A performer of enterprise processes — human, team, system, or AI agent.
+
+    - entity_id: dea:entity-business-function
+      class_alias: BF
+      display_name: Business Function
+      layer: L3
+      building_block: L3-work-organization
+      status: planned
+      catalog_repo: null
+      description: A grouping of business capabilities by organisational function; owned by an organizational unit.
+
+    - entity_id: dea:entity-business-object
+      class_alias: BO
+      display_name: Business Object
+      layer: L3
+      building_block: L3-business-information
+      status: scaffold
+      catalog_repo: dea-catalog-business-objects
+      ecf_coordinates: {domain: null, stage: null}
+      description: A real-world entity of interest to the business (e.g. Customer, Order). The atom of the ECF matrix.
+
+    - entity_id: dea:entity-process
+      class_alias: BP
+      display_name: Business Process
+      layer: L3
+      building_block: L3-value-delivery
+      status: scaffold
+      catalog_repo: dea-catalog-processes
+      measured_by: [MTR]
+      description: A structured set of activities that produces a defined outcome.
+
+    - entity_id: dea:entity-business-service
+      class_alias: BS
+      display_name: Business Service
+      layer: L3
+      building_block: L3-service-offerings
+      status: existing
+      catalog_repo: dea-catalog-digital-business-service-factory
+      discriminator: entry_kind
+      description: A service exposed to the business or to external consumers. Composite of capabilities, realised by solution components.
+
+    - entity_id: dea:entity-capability
+      class_alias: CAP
+      display_name: Business Capability
+      layer: L3
+      building_block: L3-value-delivery
+      status: planned
+      catalog_repo: dea-catalog-business-capabilities
+      ecf_coordinates: {domain: null, stage: null}
+      measured_by: [MTR]
+      description: An ability the business possesses or requires to deliver value. Maps to ECF coordinates.
+
+    - entity_id: dea:entity-organizational-unit
+      class_alias: OU
+      display_name: Organizational Unit
+      layer: L3
+      building_block: L3-work-organization
+      status: scaffold
+      catalog_repo: dea-catalog-organizational-units
+      description: A unit of organisation that owns capabilities, runs processes, and is custodian for business objects.
+
+    - entity_id: dea:entity-solution-component
+      class_alias: SC
+      display_name: Solution Component
+      layer: L3
+      building_block: L3-service-offerings
+      status: existing
+      catalog_repo: dea-catalog-digital-business-service-factory
+      abstract: true
+      discriminator: entry_kind
+      realized_in_layers: [L5]
+      description: >
+        Abstract parent of ApplicationComponent, InfrastructureComponent, IntegrationComponent
+        (discriminated union by component_type). Concrete subclasses are allocated to L5;
+        see specializes on APC/IFC/IGC below. (ADR-0002 D3)
+
+    - entity_id: dea:entity-value-stream
+      class_alias: VS
+      display_name: Value Stream
+      layer: L3
+      building_block: L3-value-delivery
+      status: planned
+      catalog_repo: dea-catalog-value-streams
+      description: An end-to-end collection of value-creating activities spanning multiple capabilities and processes.
+
+    - entity_id: dea:entity-ai-ml-model
+      class_alias: AIM
+      display_name: AI/ML Model
+      layer: L4
+      building_block: L4-intelligence
+      status: planned
+      catalog_repo: dea-catalog-ai-ml-models
+      description: A machine-learning or AI model that augments or replaces human decision-making within a capability.
+
+    - entity_id: dea:entity-data-entity
+      class_alias: DE
+      display_name: Data Entity
+      layer: L4
+      building_block: L4-data-foundation
+      status: planned
+      catalog_repo: dea-catalog-data-entities
+      description: A persistent data structure (table, document, graph node) that realises one or more business objects.
+
+    - entity_id: dea:entity-digital-identity
+      class_alias: DI
+      display_name: Digital Identity
+      layer: L4
+      building_block: L4-digital-trust
+      status: planned
+      catalog_repo: dea-catalog-digital-identities
+      description: A digital representation (twin) of a stakeholder or actor for authentication, authorisation, and traceability.
+
+    - entity_id: dea:entity-data-product
+      class_alias: DP
+      display_name: Data Product
+      layer: L4
+      building_block: L4-data-products
+      status: planned
+      catalog_repo: dea-catalog-data-products
+      description: A curated, discoverable, governed dataset or data service with clear ownership and SLAs (data-mesh pattern).
+
+    - entity_id: dea:entity-event
+      class_alias: EVT
+      display_name: Event
+      layer: L4
+      building_block: L4-events
+      status: planned
+      catalog_repo: dea-catalog-event-streams
+      description: A significant state change or business occurrence that business objects participate in.
+
+    - entity_id: dea:entity-information-class
+      class_alias: IC
+      display_name: Information Class
+      layer: L4
+      building_block: L4-data-foundation
+      status: planned
+      catalog_repo: dea-catalog-information-classes
+      description: A classification of information by sensitivity and regulatory regime (PII, PHI, PCI).
+
+    - entity_id: dea:entity-application-component
+      class_alias: APC
+      display_name: Application Component
+      layer: L5
+      building_block: L5-systems
+      status: planned
+      catalog_repo: dea-catalog-application-components
+      discriminator: component_type
+      specializes: SC
+      description: A deployable unit of an application system. SubClass of SolutionComponent with component_type='application'.
+
+    - entity_id: dea:entity-api
+      class_alias: API
+      display_name: API
+      layer: L5
+      building_block: L5-integration
+      status: planned
+      catalog_repo: dea-catalog-api-contracts
+      description: A contract defining the request/response shape of a service interface.
+
+    - entity_id: dea:entity-infrastructure-component
+      class_alias: IFC
+      display_name: Infrastructure Component
+      layer: L5
+      building_block: L5-infrastructure
+      status: planned
+      catalog_repo: dea-catalog-application-components
+      discriminator: component_type
+      specializes: SC
+      description: An IaC-managed resource that hosts solution components. SubClass of SolutionComponent with component_type='infrastructure'.
+
+    - entity_id: dea:entity-integration-component
+      class_alias: IGC
+      display_name: Integration Component
+      layer: L5
+      building_block: L5-integration
+      status: planned
+      catalog_repo: dea-catalog-application-components
+      discriminator: component_type
+      specializes: SC
+      description: A component that bridges systems via APIs, queues, file transfers. SubClass of SolutionComponent with component_type='integration'.
+
+    - entity_id: dea:entity-platform-service
+      class_alias: PS
+      display_name: Platform Service
+      layer: L5
+      building_block: L5-infrastructure
+      status: planned
+      catalog_repo: dea-catalog-platform-services
+      description: A shared infrastructure or runtime service consumed by multiple application components.
+
+    - entity_id: dea:entity-system-function
+      class_alias: SF
+      display_name: System Function
+      layer: L5
+      building_block: L5-systems
+      status: planned
+      catalog_repo: dea-catalog-system-functions
+      measured_by: [MTR]
+      description: A functional capability exposed by a single application or system.
+
+    - entity_id: dea:entity-technology
+      class_alias: TEC
+      display_name: Technology
+      layer: L5
+      building_block: L5-technology
+      status: planned
+      catalog_repo: dea-catalog-patterns
+      discriminator: technology_kind
+      description: A technology choice (language, framework, runtime, database) governed via Standards + Principles.
+
+    - entity_id: dea:entity-metric
+      class_alias: MTR
+      display_name: Performance Metric
+      status: existing
+      catalog_repo: dea-catalog-metrics
+      scope_layers: [L1, L2, L3, L4, L5]
+      description: >
+        A measured quantity used to evaluate outcomes against targets.
+        MECE taxonomy: kpi | health | maturity | performance | adoption | compliance | risk.
+        No longer allocated to a layer/building_block as of v0.2.0 — belongs to
+        orthogonal_allocators.measurement-dimension instead (ADR-0002 D1).
+
+repository_tiers:
   - tier: T0
     role: root-model
-    repos:
-    - dea-architecture-framework
+    repos: [dea-architecture-framework]
     note: This repo. The authoritative definition of layers, building blocks, and allocation.
   - tier: T1
     role: machine-schemas
-    repos:
-    - dea-metamodel
+    repos: [dea-metamodel]
     note: Consumer. Entity schemas, TTL, SQLite, TS/Pydantic types, viewer graph — all generated from / pinned to this model.
   - tier: T2
     role: catalogs
-    repos:
-    - dea-catalog-*
+    repos: [dea-catalog-*]
     note: Consumers. Host entity instances; declare allocation via metamodel-pointer.yaml validated against this model.
   - tier: T3
     role: tooling-viewers
-    repos:
-    - dea-cli
-    - dea-web-viewer
-    - technehub-labs.github.io
+    repos: [dea-cli, dea-web-viewer, technehub-labs.github.io]
     note: Consumers. Render and navigate the allocated model.
+
+# Relationship schema (v0.2.0):
+#   from, to        : class_alias references
+#   label            : human-readable (unchanged from v0.1.0)
+#   rel_type         : realization | composition | aggregation | dependency | flow | governance | association
+#   cardinality      : "<from-side>:<to-side>", each side in {0..1, 1, 0..N, 1..N}
+#   style            : DEPRECATED — derive from rel_type in viewers; retained for T3 back-compat only
 relationships:
-- from: SO
-  to: II
-  label: drives
-  style: solid
-- from: II
-  to: CAP
-  label: funds
-  style: solid
-- from: VS
-  to: CAP
-  label: traverses
-  style: solid
-- from: VS
-  to: JT
-  label: experienced via
-  style: solid
-- from: CAP
-  to: BP
-  label: implemented by
-  style: solid
-- from: CAP
-  to: BO
-  label: produces / consumes
-  style: solid
-- from: SH
-  to: BP
-  label: served by
-  style: dashed
-- from: AC
-  to: BP
-  label: performs
-  style: solid
-- from: JT
-  to: DI
-  label: authenticates
-  style: solid
-- from: DI
-  to: DE
-  label: represented by
-  style: solid
-- from: BP
-  to: SF
-  label: automated by
-  style: solid
-- from: BO
-  to: DE
-  label: digitized as
-  style: solid
-- from: OU
-  to: BO
-  label: custodian of
-  style: dashed
-- from: BS
-  to: BO
-  label: exposes
-  style: solid
-- from: DE
-  to: IC
-  label: classified by
-  style: dashed
-- from: DE
-  to: DP
-  label: curated into
-  style: dashed
-- from: SF
-  to: EVT
-  label: publishes / subscribes
-  style: solid
-- from: EVT
-  to: DE
-  label: carries payload of
-  style: dashed
-- from: DP
-  to: API
-  label: exposed via
-  style: solid
-- from: AIM
-  to: DP
-  label: trained on
-  style: solid
-- from: AIM
-  to: SF
-  label: enhances / automates
-  style: solid
-- from: SF
-  to: APC
-  label: hosted by
-  style: solid
-- from: APC
-  to: PS
-  label: deployed on
-  style: dashed
-- from: SF
-  to: API
-  label: exposed via
-  style: solid
-- from: API
-  to: DE
-  label: serves / exchanges
-  style: dashed
-- from: TEC
-  to: APC
-  label: implements
-  style: solid
-- from: SO
-  to: MTR
-  label: measured by
-  style: dashed
-- from: CAP
-  to: MTR
-  label: evaluated by
-  style: dashed
-- from: SF
-  to: MTR
-  label: evaluated by
-  style: dashed
-- from: EA
-  to: CA
-  label: engages in
-  style: solid
-- from: CA
-  to: VE
-  label: governs
-  style: solid
-- from: EA
-  to: SO
-  label: influences
-  style: dashed
-- from: VE
-  to: JT
-  label: crosses boundary at
-  style: solid
-- from: VE
-  to: BO
-  label: transports (payload)
-  style: dashed
-- from: EA
-  to: DI
-  label: represented by
-  style: solid
-- from: CAP
-  to: BF
-  label: grouped by
-  style: solid
-- from: BF
-  to: OU
-  label: owned by
-  style: solid
+  - {from: SO, to: II,  label: drives,                    rel_type: governance,   cardinality: "1:0..N"}
+  - {from: II, to: CAP, label: funds,                     rel_type: governance,   cardinality: "1:0..N"}
+  - {from: VS, to: CAP, label: traverses,                 rel_type: aggregation,  cardinality: "1..N:1..N"}
+  - {from: VS, to: JT,  label: experienced via,            rel_type: flow,         cardinality: "1:0..N"}
+  - {from: CAP, to: BP, label: implemented by,             rel_type: realization,  cardinality: "1:1..N"}
+  - {from: CAP, to: BO, label: produces / consumes,        rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: SH, to: BP,  label: served by,                  rel_type: association,  cardinality: "0..N:0..N"}
+  - {from: AC, to: BP,  label: performs,                   rel_type: association,  cardinality: "0..N:0..N"}
+  - {from: JT, to: DI,  label: authenticates,               rel_type: dependency,   cardinality: "0..N:1"}
+  - {from: DI, to: DE,  label: represented by,              rel_type: realization,  cardinality: "1:1"}
+  - {from: BP, to: SF,  label: automated by,                rel_type: realization,  cardinality: "0..N:0..N"}
+  - {from: BO, to: DE,  label: digitized as,                rel_type: realization,  cardinality: "1:0..N"}
+  - {from: OU, to: BO,  label: custodian of,                rel_type: governance,   cardinality: "1:0..N"}
+  - {from: BS, to: BO,  label: exposes,                     rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: DE, to: IC,  label: classified by,               rel_type: governance,   cardinality: "0..N:1..N"}
+  - {from: DE, to: DP,  label: curated into,                rel_type: composition,  cardinality: "0..N:0..N"}
+  - {from: SF, to: EVT, label: publishes / subscribes,       rel_type: flow,         cardinality: "0..N:0..N"}
+  - {from: EVT, to: DE, label: carries payload of,           rel_type: dependency,   cardinality: "0..N:0..1"}
+  - {from: DP, to: API, label: exposed via,                  rel_type: realization,  cardinality: "1:1..N"}
+  - {from: AIM, to: DP, label: trained on,                   rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: AIM, to: SF, label: enhances / automates,          rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: SF, to: APC, label: hosted by,                    rel_type: composition,  cardinality: "0..N:1"}
+  - {from: APC, to: PS, label: deployed on,                  rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: SF, to: API, label: exposed via,                  rel_type: realization,  cardinality: "0..N:0..N"}
+  - {from: API, to: DE, label: serves / exchanges,            rel_type: flow,         cardinality: "0..N:0..N"}
+  - {from: TEC, to: APC, label: implements,                  rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: SO, to: MTR, label: measured by,                  rel_type: governance,   cardinality: "1:0..N"}
+  - {from: CAP, to: MTR, label: evaluated by,                 rel_type: governance,   cardinality: "1:0..N"}
+  - {from: SF, to: MTR, label: evaluated by,                  rel_type: governance,   cardinality: "1:0..N"}
+  - {from: EA, to: CA,  label: engages in,                   rel_type: association,  cardinality: "0..N:0..N"}
+  - {from: CA, to: VE,  label: governs,                      rel_type: governance,   cardinality: "1:0..N"}
+  - {from: EA, to: SO,  label: influences,                   rel_type: association,  cardinality: "0..N:0..N"}
+  - {from: VE, to: JT,  label: crosses boundary at,           rel_type: flow,         cardinality: "0..N:0..N"}
+  - {from: VE, to: BO,  label: transports (payload),          rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: EA, to: DI,  label: represented by,                rel_type: realization,  cardinality: "1:1"}
+  - {from: CAP, to: BF, label: grouped by,                   rel_type: aggregation,  cardinality: "0..N:1"}
+  - {from: BF, to: OU,  label: owned by,                     rel_type: governance,   cardinality: "1:1"}

@@ -16,7 +16,7 @@ Layers are derived from the enterprise axiom (MECE by construction):
 | *"bounded entity"* | **L3 Business Operating Model** (Internal) — how work is organised |
 | *"exchanging value"* (digital plane) | **L4 Digital & Intelligence** (Data & Brain) |
 | *"persists"* (execution plane) | **L5 Technology & Execution** (Systems & Infra) |
-| persistence over time requires feedback | **L6 Measurement** (Cross-Cutting) |
+| persistence over time requires feedback | **Measurement Dimension** (orthogonal, cross-cutting — demoted from L6 by ADR-0002 D1) |
 
 L4/L5 also reflect the conventional digital/technology split (accepted
 convention, documented tie-breakers) — the axiom anchors the boundary at
@@ -40,8 +40,8 @@ convention, documented tie-breakers) — the axiom anchors the boundary at
 | Business Service (BS) | L2 | **L3** | Offering of the operating model |
 | Principle / Standard / Pattern / Reference Model / Glossary / Taxonomy / Viewpoint | L1/L2 | **L2** | All are intent, rules, or governed knowledge |
 | Data Entity / Information Class | L4 | **L4** | Data plane confirmed under Digital & Intelligence |
-| Performance Metric (MTR) | L5 | **L6** | Measurement is its own cross-cutting layer |
-| *(new)* Ecosystem Actor, Value Exchange, Collaboration Agreement, Business Function | — | L1, L1, L2, L3 | Required by the 6-layer model; status `planned`, catalog repos TBD |
+| Performance Metric (MTR) | L5 | **Measurement Dimension** (no home layer) | Measurement is a cross-cutting dimension, not a layer (ADR-0002 D1) |
+| *(new)* Ecosystem Actor, Value Exchange, Collaboration Agreement, Business Function | — | L1, L1, L1, L3 | Required by the model; status `planned`, catalog repos TBD. CA initially placed L2 (v0.1.0), moved to L1 by ADR-0002 D2 |
 
 ## Boundary rules (MECE discipline)
 
@@ -56,7 +56,7 @@ convention, documented tie-breakers) — the axiom anchors the boundary at
   Component (L5).** SC is the solution-level abstraction owned by the
   operating model; APC/IFC/IGC are its concrete realisations on the
   execution substrate.
-- **Layer vs Tier.** "Layer" = L1–L6 architecture layer (this model).
+- **Layer vs Tier.** "Layer" = L1–L5 architecture layer (this model; L6 was demoted to the Measurement Dimension by ADR-0002 D1).
   "Tier" = T0–T3 repository-stack position. Catalog READMEs must not use
   "Layer" for stack position.
 

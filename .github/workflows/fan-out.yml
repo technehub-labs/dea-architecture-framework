@@ -5,18 +5,18 @@ name: fan-out
 # repository_dispatch type `opendeam-model-changed` to regenerate their
 # derived artifacts (entity-graph.json → PUML → SVG → pages → viewers).
 #
-# PHASE 2 WIRING: currently manual-dispatch only. The automatic `push` trigger
-# is enabled when (a) secrets.MODEL_SYNC_TOKEN (PAT, repo scope on the org) is
-# configured and (b) dea-metamodel has its receiver workflow. To activate,
-# uncomment the push trigger below.
+# PHASE 2 WIRING: active as of v0.2.0 — secrets.MODEL_SYNC_TOKEN (PAT, repo
+# scope on the org) is configured and dea-metamodel has its receiver workflow
+# (repository_dispatch: opendeam-model-changed). The push trigger below fires
+# only when the model or VERSION changes on main.
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [main]
-  #   paths:
-  #     - "model/**"
-  #     - "VERSION"
+  push:
+    branches: [main]
+    paths:
+      - "model/**"
+      - "VERSION"
 
 jobs:
   dispatch:

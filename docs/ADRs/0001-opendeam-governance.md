@@ -19,10 +19,10 @@ Decision (2026-08-12, eaojnr): adopt the **6-layer ecosystem-on-top model**, est
 
 ## Decision
 
-1. **Single root.** This repository (`dea-architecture-framework`) hosts `model/opendeam-model.yaml` — the single source of truth for architecture layers (L1–L6), building blocks, entity allocation, and relationships. No other repo may claim source-of-truth status for these concepts.
+1. **Single root.** This repository (`dea-architecture-framework`) hosts `model/opendeam-model.yaml` — the single source of truth for architecture layers (L1–L6 as of v0.1.0; L1–L5 + Measurement Dimension as of v0.2.0 per ADR-0002), building blocks, entity allocation, and relationships. No other repo may claim source-of-truth status for these concepts.
 2. **dea-metamodel is a consumer.** Its `viewer/entity-graph.json`, PUML, SVG, and schema layer-enums become generated from / pinned to this model (Phase 2).
 3. **dea-metaframework is an orthogonal allocator, not a competitor.** It owns the ECF 7×7 "city-block" matrix (domain × lifecycle stage). OpenDEAM answers *which layer does this object belong to*; the ECF matrix answers *which city block does this object operate in*. The model references the matrix via `orthogonal_allocators`; it does not redefine it.
-4. **Terminology rule.** "Layer" (L1–L6) means architecture layer, defined only here. Repository-stack position is "Tier" (T0–T3). Any org document using "Layer" for stack position is drift.
+4. **Terminology rule.** "Layer" (L1–L6 as of v0.1.0; L1–L5 as of v0.2.0 per ADR-0002) means architecture layer, defined only here. Repository-stack position is "Tier" (T0–T3). Any org document using "Layer" for stack position is drift.
 5. **Change control.**
    - Structural changes (add/remove layer, new orthogonal dimension, entity re-allocation, relationship semantic change) → ADR + minor version bump.
    - Additive changes (new entity in an existing building block, new relationship, new building block) → PR + patch version bump.
