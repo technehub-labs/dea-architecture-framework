@@ -15,11 +15,17 @@ Checks beyond JSON Schema:
   5. Entities with status 'existing'/'scaffold' must declare a catalog_repo.
   6. measured_by targets exist and are dimension entities; the measured
      entity's layer must be within the metric's scope_layers.
+  6b. governed_by targets exist and are L2-risk-compliance entities
+     (ADR-0003 D6).
+  6c. defined_by / parent_concept targets exist and are dimension entities
+     covering the source entity's layer; no Concept self-parenting
+     (ADR-0004 D2). `enforcement` is enum-constrained by the schema
+     (ADR-0004 D4).
   7. specializes targets exist and are abstract:true; the parent's
      realized_in_layers must include the subclass's layer. abstract:true
      entities must declare realized_in_layers.
   8. A catalog_repo shared by multiple entities requires every sharer to
-     declare a discriminator (ADR-0002 D6).
+     declare a discriminator (ADR-0002 D6) — non-blocking warning as of v0.3.0.
   9. VERSION file matches model.version.
 
 Run: python3 scripts/validate_model.py
@@ -136,6 +142,35 @@ def main() -> int:
                     f"integrity: {e['class_alias']} governed_by {target} — "
                     f"governed_by must reference Risk/Control/Regulation entities ({GOVERNANCE_BB})"
                 )
+
+    # 6c. defined_by / parent_concept (ADR-0004 D2, semantic-dimension) ->
+    # targets must exist and be dimension entities whose scope_layers cover
+    # the source entity's layer; a Concept may not be its own parent.
+    # NOTE: with >1 dimension entity (MTR, CON) the model does not declare
+    # which dimension entity backs which allocator, so these checks accept
+    # any dimension entity as target — same looseness as check 6.
+    for e in entities:
+        for field in ("defined_by",):
+            for target in e.get(field, []):
+                t = by_alias.get(target)
+                if not t:
+                    errors.append(f"integrity: {e['class_alias']} {field} unknown alias {target}")
+                elif "layer" in t:
+                    errors.append(f"integrity: {e['class_alias']} {field} {target} but {target} is not a dimension entity")
+                elif "layer" in e and t.get("scope_layers") and e["layer"] not in t["scope_layers"]:
+                    errors.append(
+                        f"integrity: {e['class_alias']} (layer {e['layer']}) {field} {target} "
+                        f"whose scope_layers {t['scope_layers']} exclude it"
+                    )
+        parent_concept = e.get("parent_concept")
+        if parent_concept:
+            t = by_alias.get(parent_concept)
+            if not t:
+                errors.append(f"integrity: {e['class_alias']} parent_concept unknown alias {parent_concept}")
+            elif "layer" in t:
+                errors.append(f"integrity: {e['class_alias']} parent_concept {parent_concept} but {parent_concept} is not a dimension entity")
+            if parent_concept == e["class_alias"]:
+                errors.append(f"integrity: {e['class_alias']} parent_concept references itself")
 
     # 7. specializes / abstract / realized_in_layers
     for e in entities:

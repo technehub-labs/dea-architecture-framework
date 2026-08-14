@@ -1,75 +1,176 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/technehub-labs/dea-architecture-framework/blob/main/schemas/opendeam-model.schema.json",
-  "title": "OpenDEAM — Open Digital Enterprise Architecture Model",
-  "description": "Schema for model/opendeam-model.yaml — the single source of truth for DEA architecture layers, building blocks, entity allocation, and relationships. v0.2.0: measurement is an orthogonal dimension (not a layer); entities may be abstract with cross-layer realization; relationships carry rel_type + cardinality.",
+  "title": "OpenDEAM \u2014 Open Digital Enterprise Architecture Model",
+  "description": "Schema for model/opendeam-model.yaml \u2014 the single source of truth for DEA architecture layers, building blocks, entity allocation, and relationships. v0.2.0: measurement is an orthogonal dimension (not a layer); entities may be abstract with cross-layer realization; relationships carry rel_type + cardinality.",
   "type": "object",
-  "required": ["model", "terminology", "architecture", "allocation", "repository_tiers", "relationships"],
+  "required": [
+    "model",
+    "terminology",
+    "architecture",
+    "allocation",
+    "repository_tiers",
+    "relationships"
+  ],
   "properties": {
     "model": {
       "type": "object",
-      "required": ["name", "id", "version", "status", "owner_repo", "axiom"],
+      "required": [
+        "name",
+        "id",
+        "version",
+        "status",
+        "owner_repo",
+        "axiom"
+      ],
       "properties": {
-        "name": { "type": "string" },
-        "id": { "type": "string", "enum": ["opendeam"] },
-        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
-        "status": { "type": "string", "enum": ["alpha", "beta", "stable"] },
-        "owner_repo": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$" },
-        "axiom": { "type": "string" },
-        "supersedes": { "type": "string" }
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "enum": [
+            "opendeam"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "alpha",
+            "beta",
+            "stable"
+          ]
+        },
+        "owner_repo": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+        },
+        "axiom": {
+          "type": "string"
+        },
+        "supersedes": {
+          "type": "string"
+        }
       }
     },
     "terminology": {
       "type": "object",
-      "required": ["layer", "building_block", "entity"],
+      "required": [
+        "layer",
+        "building_block",
+        "entity"
+      ],
       "properties": {
-        "layer": { "type": "string" },
-        "tier": { "type": "string" },
-        "building_block": { "type": "string" },
-        "entity": { "type": "string" },
-        "abstract_entities": { "type": "string" },
-        "shared_catalog_convention": { "type": "string" },
+        "layer": {
+          "type": "string"
+        },
+        "tier": {
+          "type": "string"
+        },
+        "building_block": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "string"
+        },
+        "abstract_entities": {
+          "type": "string"
+        },
+        "shared_catalog_convention": {
+          "type": "string"
+        },
         "lifecycle": {
           "type": "object",
-          "required": ["states_ordered"],
+          "required": [
+            "states_ordered"
+          ],
           "properties": {
             "states_ordered": {
               "type": "array",
               "minItems": 2,
-              "items": { "type": "string", "enum": ["proposed", "planned", "scaffold", "existing", "deprecated", "retired"] }
+              "items": {
+                "type": "string",
+                "enum": [
+                  "proposed",
+                  "planned",
+                  "scaffold",
+                  "existing",
+                  "deprecated",
+                  "retired"
+                ]
+              }
             },
-            "forward_transition": { "type": "string" },
-            "backward_transition_or_retirement": { "type": "string" }
+            "forward_transition": {
+              "type": "string"
+            },
+            "backward_transition_or_retirement": {
+              "type": "string"
+            }
           }
         }
       }
     },
     "architecture": {
       "type": "object",
-      "required": ["layers"],
+      "required": [
+        "layers"
+      ],
       "properties": {
         "layers": {
           "type": "array",
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": ["id", "name", "qualifier", "color", "derivation", "building_blocks"],
+            "required": [
+              "id",
+              "name",
+              "qualifier",
+              "color",
+              "derivation",
+              "building_blocks"
+            ],
             "properties": {
-              "id": { "type": "string", "pattern": "^L[0-9]+$" },
-              "name": { "type": "string" },
-              "qualifier": { "type": "string" },
-              "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
-              "derivation": { "type": "string" },
+              "id": {
+                "type": "string",
+                "pattern": "^L[0-9]+$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "qualifier": {
+                "type": "string"
+              },
+              "color": {
+                "type": "string",
+                "pattern": "^#[0-9A-Fa-f]{6}$"
+              },
+              "derivation": {
+                "type": "string"
+              },
               "building_blocks": {
                 "type": "array",
                 "minItems": 1,
                 "items": {
                   "type": "object",
-                  "required": ["id", "name"],
+                  "required": [
+                    "id",
+                    "name"
+                  ],
                   "properties": {
-                    "id": { "type": "string", "pattern": "^L[0-9]+-[a-z-]+$" },
-                    "name": { "type": "string" },
-                    "note": { "type": "string" }
+                    "id": {
+                      "type": "string",
+                      "pattern": "^L[0-9]+-[a-z-]+$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -80,14 +181,35 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "name", "owner_repo", "kind", "description"],
+            "required": [
+              "id",
+              "name",
+              "owner_repo",
+              "kind",
+              "description"
+            ],
             "properties": {
-              "id": { "type": "string" },
-              "name": { "type": "string" },
-              "owner_repo": { "type": "string" },
-              "kind": { "type": "string" },
-              "description": { "type": "string" },
-              "reference": { "type": ["string", "null"] }
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "owner_repo": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "reference": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
             }
           }
         }
@@ -95,40 +217,155 @@
     },
     "allocation": {
       "type": "object",
-      "required": ["entities"],
+      "required": [
+        "entities"
+      ],
       "properties": {
         "entities": {
           "type": "array",
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": ["entity_id", "class_alias", "display_name", "status"],
+            "required": [
+              "entity_id",
+              "class_alias",
+              "display_name",
+              "status"
+            ],
             "properties": {
-              "entity_id": { "type": "string", "pattern": "^dea:entity-[a-z-]+$" },
-              "class_alias": { "type": "string", "maxLength": 5 },
-              "display_name": { "type": "string" },
-              "layer": { "type": "string", "pattern": "^L[0-9]+$" },
-              "building_block": { "type": "string", "pattern": "^L[0-9]+-[a-z-]+$" },
-              "status": { "type": "string", "enum": ["proposed", "planned", "scaffold", "existing", "deprecated", "retired"] },
-              "catalog_repo": { "type": ["string", "null"], "pattern": "^[a-z0-9-]+$" },
-              "abstract": { "type": "boolean" },
-              "specializes": { "type": "string", "maxLength": 5 },
-              "realized_in_layers": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^L[0-9]+$" } },
-              "discriminator": { "type": "string" },
+              "entity_id": {
+                "type": "string",
+                "pattern": "^dea:entity-[a-z-]+$"
+              },
+              "class_alias": {
+                "type": "string",
+                "maxLength": 5
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "layer": {
+                "type": "string",
+                "pattern": "^L[0-9]+$"
+              },
+              "building_block": {
+                "type": "string",
+                "pattern": "^L[0-9]+-[a-z-]+$"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "proposed",
+                  "planned",
+                  "scaffold",
+                  "existing",
+                  "deprecated",
+                  "retired"
+                ]
+              },
+              "catalog_repo": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "abstract": {
+                "type": "boolean"
+              },
+              "specializes": {
+                "type": "string",
+                "maxLength": 5
+              },
+              "realized_in_layers": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "pattern": "^L[0-9]+$"
+                }
+              },
+              "discriminator": {
+                "type": "string"
+              },
               "ecf_coordinates": {
                 "type": "object",
                 "properties": {
-                  "domain": { "type": ["string", "null"] },
-                  "stage": { "type": ["string", "null"] }
+                  "domain": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "stage": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
                 },
                 "additionalProperties": false
               },
-              "measured_by": { "type": "array", "minItems": 1, "items": { "type": "string", "maxLength": 5 } },
-              "governed_by": { "type": "array", "items": { "type": "string", "maxLength": 5 } },
-              "scope_layers": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^L[0-9]+$" } },
-              "prior_layer_v2": { "type": "string", "pattern": "^L[0-9]+$" },
-              "migration_note": { "type": "string" },
-              "description": { "type": "string" }
+              "measured_by": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "maxLength": 5
+                }
+              },
+              "governed_by": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 5
+                }
+              },
+              "scope_layers": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "pattern": "^L[0-9]+$"
+                }
+              },
+              "prior_layer_v2": {
+                "type": "string",
+                "pattern": "^L[0-9]+$"
+              },
+              "migration_note": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "enforcement": {
+                "type": "string",
+                "enum": [
+                  "advisory",
+                  "automated-warn",
+                  "automated-block",
+                  "platform-enforced"
+                ],
+                "description": "ADR-0004 D4 \u2014 Guardrail enforcement maturity. Only meaningful on entities in L2-rules-guidance."
+              },
+              "defined_by": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "maxLength": 5
+                },
+                "description": "ADR-0004 D2 \u2014 aliases of Concept (semantic-dimension) entities defining this entity."
+              },
+              "parent_concept": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 5,
+                "description": "ADR-0004 D2 \u2014 alias of the parent Concept in the concept graph (null/omitted = root)."
+              }
             }
           }
         }
@@ -139,12 +376,28 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["tier", "role", "repos"],
+        "required": [
+          "tier",
+          "role",
+          "repos"
+        ],
         "properties": {
-          "tier": { "type": "string", "pattern": "^T[0-9]+$" },
-          "role": { "type": "string" },
-          "repos": { "type": "array", "items": { "type": "string" } },
-          "note": { "type": "string" }
+          "tier": {
+            "type": "string",
+            "pattern": "^T[0-9]+$"
+          },
+          "role": {
+            "type": "string"
+          },
+          "repos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "note": {
+            "type": "string"
+          }
         }
       }
     },
@@ -152,14 +405,49 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["from", "to", "label", "rel_type", "cardinality"],
+        "required": [
+          "from",
+          "to",
+          "label",
+          "rel_type",
+          "cardinality"
+        ],
         "properties": {
-          "from": { "type": "string", "maxLength": 5 },
-          "to": { "type": "string", "maxLength": 5 },
-          "label": { "type": "string" },
-          "rel_type": { "type": "string", "enum": ["realization", "composition", "aggregation", "dependency", "flow", "governance", "association"] },
-          "cardinality": { "type": "string", "pattern": "^(0\\.\\.1|1|0\\.\\.N|1\\.\\.N):(0\\.\\.1|1|0\\.\\.N|1\\.\\.N)$" },
-          "style": { "type": "string", "enum": ["solid", "dashed"], "deprecated": true }
+          "from": {
+            "type": "string",
+            "maxLength": 5
+          },
+          "to": {
+            "type": "string",
+            "maxLength": 5
+          },
+          "label": {
+            "type": "string"
+          },
+          "rel_type": {
+            "type": "string",
+            "enum": [
+              "realization",
+              "composition",
+              "aggregation",
+              "dependency",
+              "flow",
+              "governance",
+              "association"
+            ]
+          },
+          "cardinality": {
+            "type": "string",
+            "pattern": "^(0\\.\\.1|1|0\\.\\.N|1\\.\\.N):(0\\.\\.1|1|0\\.\\.N|1\\.\\.N)$"
+          },
+          "style": {
+            "type": "string",
+            "enum": [
+              "solid",
+              "dashed"
+            ],
+            "deprecated": true
+          }
         }
       }
     }
