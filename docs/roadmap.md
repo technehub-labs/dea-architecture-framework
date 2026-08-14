@@ -41,8 +41,8 @@ non-catalog repo, or (c) retire/archive.
 |---|---|---|
 | `dea-catalog-agent-foundry` | Legacy pointer, no model entity | Composite concept (agents span L3–L5) — likely (b) |
 | `dea-catalog-solution-hub` | Legacy pointer, no model entity | Composite (solution archetypes) — likely (b) |
-| `dea-catalog-reference-architecture` | Legacy pointer, no model entity | Overlaps `dea:entity-reference-model` (RM, L2) — candidate (a) |
-| `dea-catalog-ontologies` | Legacy pointer, no model entity | Semantics content — candidate (a) via a new entity (ADR needed) or (b) |
+| `dea-catalog-reference-architecture` | Legacy pointer, no model entity | Overlaps `dea:entity-blueprint` (BLU, L2 — renamed from RM in v0.4.0) — candidate (a) |
+| `dea-catalog-ontologies` | Legacy pointer, no model entity | Semantics content — `dea:entity-concept` (CON) + semantic-dimension now exist (v0.4.0) — candidate (a) via CON or (b) |
 
 **Trigger for action:** any of these repos gaining real content, or the next
 structural ADR touching L2 semantics / reference knowledge. Until then they
