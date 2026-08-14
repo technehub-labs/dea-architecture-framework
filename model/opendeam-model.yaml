@@ -1,8 +1,28 @@
 # ═══════════════════════════════════════════════════════════════════════════
-# OpenDEAM — Open Digital Enterprise Architecture Model (v0.3.0)
+# OpenDEAM — Open Digital Enterprise Architecture Model (v0.4.0)
 #
 # This file is the SINGLE SOURCE OF TRUTH for the DEA architecture:
 # layers → building blocks → entity allocation → relationships.
+#
+# CHANGE FROM v0.3.0 — see docs/ADRs/ADR-0004-opendeam-v0.4.0-l2-cleanup-vocabulary-purge.md
+#   - Removed: Viewpoint (out of scope — belongs to T3 tooling, not architecture).
+#   - Merged: Glossary Term + Taxonomy Node -> Concept, demoted to a new
+#     orthogonal_allocator "semantic-dimension" (any entity may carry defined_by).
+#   - Renamed + wired (previously orphaned, zero relationships each):
+#       Principle       -> Tenet      (informs Guardrail; non-binding belief)
+#       Standard        -> Guardrail  (governs Technology/Solution Component;
+#                                       implements Control; new `enforcement`
+#                                       maturity field: advisory..platform-enforced)
+#       Reference Model -> Blueprint  (composed of Architecture Pattern)
+#   - L2 building blocks: 7 -> 5 (L2-architecture-views, L2-semantics removed).
+#   - Standing rule added: no verbatim TOGAF/Zachman/ArchiMate terminology —
+#     see terminology.naming_philosophy.
+#   - Migration map (old entity_id -> new) for T2 consumers pinned to v0.3.x:
+#       dea:entity-principle       -> dea:entity-tenet       (alias PR  -> TNT)
+#       dea:entity-standard        -> dea:entity-guardrail    (alias STD -> GRD)
+#       dea:entity-reference-model -> dea:entity-blueprint    (alias RM  -> BLU)
+#       dea:entity-glossary-term + dea:entity-taxonomy-node -> dea:entity-concept (alias GT/TXN -> CON)
+#       dea:entity-viewpoint -> removed, no replacement (alias VP retired)
 #
 # CHANGE FROM v0.2.0 — see docs/ADRs/ADR-0003-opendeam-v0.3.0-comprehensiveness-expansion.md
 #   - New building blocks (comprehensiveness expansion, checked against the
@@ -38,11 +58,11 @@
 model:
   name: OpenDEAM — Open Digital Enterprise Architecture Model
   id: opendeam
-  version: 0.3.0
+  version: 0.4.0
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
-  supersedes: opendeam-model.yaml v0.2.0 (see ADR-0003)
+  supersedes: opendeam-model.yaml v0.3.0 (see ADR-0004)
 
 terminology:
   layer: >
@@ -62,6 +82,14 @@ terminology:
     states_ordered: [proposed, planned, scaffold, existing, deprecated, retired]
     forward_transition: Requires a PR and a patch version bump.
     backward_transition_or_retirement: Requires an ADR and a minor version bump.
+  naming_philosophy: >
+    Added in v0.4.0 (ADR-0004 D7). Before naming a new entity, check it against TOGAF's Content
+    Metamodel, Zachman's cell labels, and ArchiMate's element catalog. A word match alone is not
+    disqualifying (generic English like "Process," "Actor," "Service" is fine). A *conceptual*
+    match to a classical-EA static-documentation artifact (catalog, matrix cell, reference model,
+    principle) requires the reframe test: does naming it around what it actually does — automate,
+    enforce, compose, link — change its relationships, or only its label? If only the label
+    changes, skip the rename. If relationships follow from the reframe, it's a real fix.
 
 architecture:
   layers:
@@ -93,13 +121,11 @@ architecture:
         - id: L2-intent
           name: Strategic Intent
         - id: L2-rules-guidance
-          name: Rules & Guidance
+          name: Tenets & Guardrails
+          note: Renamed in v0.4.0 (ADR-0004 D3/D4) from "Rules & Guidance" — Principle renamed Tenet, Standard renamed Guardrail, both now wired to real relationships.
         - id: L2-reusable-knowledge
-          name: Reusable Knowledge
-        - id: L2-semantics
-          name: Semantics & Classification
-        - id: L2-architecture-views
-          name: Architecture Views
+          name: Patterns & Blueprints
+          note: Renamed in v0.4.0 (ADR-0004 D5) from "Reusable Knowledge" — Reference Model renamed Blueprint, now composed of Architecture Pattern.
         - id: L2-risk-compliance
           name: Risk & Compliance
           note: Added in v0.3.0 (ADR-0003 D2) — "persists" requires managing existential/regulatory risk as a condition, not an activity layered on top.
@@ -194,6 +220,18 @@ architecture:
         see ADR-0003 explicit rejection of a "Responsible AI" layer.
       reference: null
 
+    - id: semantic-dimension
+      name: Semantic Dimension
+      owner_repo: technehub-labs/dea-architecture-framework
+      kind: cross-cutting concept graph (not a layer, not a static glossary)
+      description: >
+        Added in v0.4.0 (ADR-0004 D2), replacing the L2-semantics building block. Merges the
+        former Glossary Term and Taxonomy Node into a single Concept entity. Any entity across
+        L1–L5 may carry defined_by: [Concept ids]. Framed as a queryable concept graph rather
+        than a static glossary document — consistent with modern data-catalog/knowledge-graph
+        practice rather than classical EA's documentation-shelf model.
+      reference: null
+
 allocation:
   entities:
     - entity_id: dea:entity-ecosystem-actor
@@ -261,14 +299,18 @@ allocation:
       discriminator: pattern_kind
       description: A reusable architecture pattern (e.g. API Gateway, Event Sourcing, CQRS) that resolves a recurring design problem.
 
-    - entity_id: dea:entity-glossary-term
-      class_alias: GT
-      display_name: Glossary Term
-      layer: L2
-      building_block: L2-semantics
-      status: planned
-      catalog_repo: dea-catalog-glossary
-      description: A canonical business or technical term with a controlled definition.
+    - entity_id: dea:entity-concept
+      class_alias: CON
+      display_name: Concept
+      status: proposed
+      catalog_repo: dea-catalog-concepts
+      scope_layers: [L1, L2, L3, L4, L5]
+      parent_concept: null
+      description: >
+        A canonical, definable unit of meaning (business term or classification node) that other
+        entities link to via defined_by. Merged from Glossary Term + Taxonomy Node in v0.4.0
+        (ADR-0004 D2); framed as a queryable concept graph, not a static glossary document. No
+        longer allocated to a layer/building_block — belongs to orthogonal_allocators.semantic-dimension.
 
     - entity_id: dea:entity-investment-initiative
       class_alias: II
@@ -279,23 +321,25 @@ allocation:
       catalog_repo: dea-catalog-investment-initiatives
       description: A funded programme of work that realises one or more strategic objectives.
 
-    - entity_id: dea:entity-principle
-      class_alias: PR
-      display_name: Principle
+    - entity_id: dea:entity-tenet
+      class_alias: TNT
+      display_name: Tenet
       layer: L2
       building_block: L2-rules-guidance
       status: planned
-      catalog_repo: dea-catalog-principles
-      description: An architectural guiding principle (e.g. API-first, data sovereignty).
+      catalog_repo: dea-catalog-tenets
+      migration_note: Renamed from Principle (PR) in v0.4.0 (ADR-0004 D3) — a non-binding belief that informs Guardrails, rather than a standalone documentation-catalog entry.
+      description: A non-binding, human-authored belief that guides decisions (e.g. API-first, prefer managed services). Informs one or more Guardrails; enforces nothing on its own.
 
-    - entity_id: dea:entity-reference-model
-      class_alias: RM
-      display_name: Reference Model
+    - entity_id: dea:entity-blueprint
+      class_alias: BLU
+      display_name: Blueprint
       layer: L2
       building_block: L2-reusable-knowledge
       status: planned
-      catalog_repo: dea-catalog-reference-models
-      description: A reference architecture model providing a reusable template for solution design.
+      catalog_repo: dea-catalog-blueprints
+      migration_note: Renamed from Reference Model (RM) in v0.4.0 (ADR-0004 D5) — now explicitly composed of Architecture Patterns rather than standing alone.
+      description: A composed, reusable target-state design assembled from Architecture Patterns, providing a template for solution design.
 
     - entity_id: dea:entity-strategic-objective
       class_alias: SO
@@ -306,32 +350,20 @@ allocation:
       catalog_repo: dea-catalog-strategic-objectives
       description: A high-level enterprise outcome the organisation seeks to achieve.
 
-    - entity_id: dea:entity-standard
-      class_alias: STD
-      display_name: Standard
+    - entity_id: dea:entity-guardrail
+      class_alias: GRD
+      display_name: Guardrail
       layer: L2
       building_block: L2-rules-guidance
       status: planned
-      catalog_repo: dea-catalog-standards
-      description: A referenced industry standard or framework (TOGAF, Zachman, ISO, IEEE) the enterprise aligns to.
-
-    - entity_id: dea:entity-taxonomy-node
-      class_alias: TXN
-      display_name: Taxonomy Node
-      layer: L2
-      building_block: L2-semantics
-      status: planned
-      catalog_repo: dea-catalog-taxonomy
-      description: A node in a controlled vocabulary taxonomy. Hierarchical via parent_node/child_nodes.
-
-    - entity_id: dea:entity-viewpoint
-      class_alias: VP
-      display_name: Viewpoint
-      layer: L2
-      building_block: L2-architecture-views
-      status: planned
-      catalog_repo: dea-web-viewer
-      description: A tailored perspective on the metamodel for a specific stakeholder concern.
+      catalog_repo: dea-catalog-guardrails
+      enforcement: automated-block
+      migration_note: Renamed from Standard (STD) in v0.4.0 (ADR-0004 D4) — now governs Technology/Solution Component and implements Control, closing the gap where Technology claimed to be "governed via Standards" with no such relationship existing.
+      description: >
+        An enforceable constraint on technology or solution choices. Carries an enforcement
+        maturity level (advisory | automated-warn | automated-block | platform-enforced) —
+        modeling policy-as-code / platform-guardrail practice rather than a static compliance
+        document someone checks against manually.
 
     - entity_id: dea:entity-risk
       class_alias: RSK
@@ -647,7 +679,7 @@ allocation:
       status: planned
       catalog_repo: dea-catalog-patterns
       discriminator: technology_kind
-      description: A technology choice (language, framework, runtime, database) governed via Standards + Principles.
+      description: A technology choice (language, framework, runtime, database) governed via Guardrails, motivated by Tenets.
 
     - entity_id: dea:entity-metric
       class_alias: MTR
@@ -744,3 +776,12 @@ relationships:
   - {from: MDP, to: APC, label: hosted by,                     rel_type: composition,  cardinality: "0..N:1"}
   - {from: MFS, to: EVT, label: derived from,                   rel_type: dependency,   cardinality: "0..N:0..N"}
   - {from: MFS, to: AIM, label: triggers retraining of,          rel_type: dependency,   cardinality: "0..N:0..N"}
+
+  # --- v0.4.0 additions (ADR-0004) — closing the six previously-orphaned L2 entities ---
+  - {from: TNT, to: GRD, label: informs,                         rel_type: dependency,   cardinality: "0..N:0..N"}
+  - {from: GRD, to: CTL, label: implements,                       rel_type: realization,  cardinality: "0..N:1"}
+  - {from: GRD, to: TEC, label: governs,                          rel_type: governance,   cardinality: "0..N:0..N"}
+  - {from: GRD, to: SC,  label: governs,                          rel_type: governance,   cardinality: "0..N:0..N"}
+  - {from: BLU, to: AP,  label: composed of,                      rel_type: composition,  cardinality: "1:1..N"}
+  - {from: CON, to: CAP, label: defines,                          rel_type: governance,   cardinality: "0..N:0..N"}
+  - {from: CON, to: BO,  label: defines,                          rel_type: governance,   cardinality: "0..N:0..N"}
