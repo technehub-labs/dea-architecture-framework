@@ -4,6 +4,17 @@ The single program-level plan for the OpenDEAM rollout across the org.
 Phase detail lives in the ADRs and PR history; this file tracks **what is
 done, what is live, and what is earmarked for future action**.
 
+## Executed phases (ADR-0004 rollout, Aug 14 2026)
+
+| Phase | Scope | Evidence |
+|---|---|---|
+| 0 | T0: ADR-0004 accepted, model v0.4.0 **verbatim as authored** (47 entities, 25 BBs, 63 rels, +semantic-dimension; L2 7→5 BBs; VP removed; GT+TXN→CON; PR→TNT, STD→GRD, RM→BLU); schema `enforcement` enum + validator check 6c (`defined_by`/`parent_concept` integrity, 6 negative controls verified) | PR #5, tag `v0.4.0` |
+| 1 | T1 dea-metamodel: generator dimension-allocator map + field passthrough fix; schemas renamed/deleted/added; pydantic/TS/TTL/sqlite regen; graph + SVG regenerated | PR #69 |
+| 2 | T3 viewers: Pages graph v0.4.0 (47 ent / 63 rels / 2 dims) verified live; dea-web-viewer per-entity dimension labels fix + deploy, bundle verified live | PR #15, live URLs |
+| 3 | T2: repos renamed (principles→tenets, standards→guardrails, reference-models→blueprints, glossary→concepts — history preserved via GitHub rename); taxonomy archived (merged into concepts); pointers regenerated + pinned `@v0.4.0` — 4/4 caller CI green | 4× PR #2 |
+
+Caller pin census after this rollout: 24 repos `@v0.2.1`, 11 `@v0.3.0`, 4 `@v0.4.0`.
+
 ## Executed phases (ADR-0003 rollout, Aug 13 2026)
 
 | Phase | Scope | Evidence |
