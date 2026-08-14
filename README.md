@@ -2,7 +2,7 @@
 
 > **OpenDEAM (Open Digital Enterprise Architecture Model)** — the root authority for the TechNeHub Labs DEA architecture: layers, building blocks, entity allocation, and relationships.
 
-[![Model Version](https://img.shields.io/badge/OpenDEAM-v0.3.0--alpha-2DD4BF?style=flat-square)](./VERSION)
+[![Model Version](https://img.shields.io/badge/OpenDEAM-v0.4.0--alpha-2DD4BF?style=flat-square)](./VERSION)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)](LICENSE)
 
 ## What this is
@@ -45,9 +45,9 @@ Consumers pin a model **tag** and validate against it:
 # In a consumer repo's workflow (e.g. dea-catalog-processes)
 jobs:
   allocation:
-    uses: technehub-labs/dea-architecture-framework/.github/workflows/validate-against-model.yml@v0.3.0
+    uses: technehub-labs/dea-architecture-framework/.github/workflows/validate-against-model.yml@v0.4.0
     with:
-      model_ref: v0.3.0
+      model_ref: v0.4.0
       pointer_file: metamodel-pointer.yaml
 ```
 
