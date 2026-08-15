@@ -59,6 +59,41 @@ non-catalog repo, or (c) retire/archive.
 structural ADR touching L2 semantics / reference knowledge. Until then they
 are excluded from `validate-allocation` wiring by design.
 
+### New catalog repos named by v0.5.0 (ADR-0005, not yet created)
+
+The model names five T2 repos that do not exist yet. **Create when first
+content lands**, foundation-first per the ADR-0003 Phase 3 pattern (README
+entity detail + pointer + `validate-allocation` CI):
+
+| Repo | Entity | Pattern |
+|---|---|---|
+| `dea-catalog-financial-resources` | Financial Resource (FR, L3) | repo-per-specialization |
+| `dea-catalog-physical-resources` | Physical Resource (PHR, L3) | repo-per-specialization |
+| `dea-catalog-intangible-resources` | Intangible Resource (INR, L3) | repo-per-specialization |
+| `dea-catalog-information-assets` | Information Asset (IA, L4) | single entity |
+| `dea-catalog-knowledge-assets` | Knowledge Asset (KA, L4) | single entity |
+
+Resource subclasses use **repo-per-specialization** (no shared repo, no
+discriminator) — the completeness contract's single-dimension rule is enforced
+structurally by repo separation. Confirmed as the precedent for future
+category roots (ADR-0005 review amendment 3). Resource itself is abstract and
+carries `catalog_repo: null` — no RES catalog.
+
+### `entity_role` / `completeness_contract` retrofit (future ADR)
+
+Retrofit the two ADR-0005 governance fields onto the 47 pre-v0.5.0 entities
+and introduce the validator rule "abstract or governance-role entities MUST
+carry `completeness_contract`". **Trigger:** after 2–3 worked examples
+exercise the mechanism (ADR-0005's six are the first), to avoid over-fitting
+the validator to one case.
+
+### Collaboration Agreement catalog candidate
+
+`dea:entity-collaboration-agreement` (CA, L1) carries `catalog_repo: null`,
+but ADR-0005 D1's Lease mapping (a lease is a CA catalog instance) points at
+a CA catalog conceptually. Candidate: `dea-catalog-collaboration-agreements`
+when agreements content lands. Earmarked, not a v0.5.0 gap.
+
 ## Known non-blocking items
 
 - `reports/REPORT.md` (Pages repo) retains pre-OpenDEAM layer names —

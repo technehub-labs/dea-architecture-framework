@@ -347,7 +347,19 @@
                   "automated-block",
                   "platform-enforced"
                 ],
-                "description": "ADR-0004 D4 \u2014 Guardrail enforcement maturity. Only meaningful on entities in L2-rules-guidance."
+                "description": "ADR-0004 D4 — Guardrail enforcement maturity. Only meaningful on entities in L2-rules-guidance."
+              },
+              "entity_role": {
+                "type": "string",
+                "enum": [
+                  "content",
+                  "governance"
+                ],
+                "description": "ADR-0005 D2 — content: an enterprise operates with it (populated by T2 catalogs); governance: exists to constrain or define the shape of other entities' catalogs. Applied to ADR-0005 entities as a worked example; retrofit to the rest deferred to a future ADR."
+              },
+              "completeness_contract": {
+                "type": "string",
+                "description": "ADR-0005 D2 — carried by abstract category roots and governance-role entities; states what a T2 catalog under this entity must classify by or satisfy to count as MECE-complete. Makes the metamodel prescriptive, not merely descriptive."
               },
               "defined_by": {
                 "type": "array",
