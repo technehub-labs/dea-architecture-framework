@@ -4,6 +4,19 @@ The single program-level plan for the OpenDEAM rollout across the org.
 Phase detail lives in the ADRs and PR history; this file tracks **what is
 done, what is live, and what is earmarked for future action**.
 
+## Executed phases (ADR-0005 rollout, Aug 15 2026)
+
+| Phase | Scope | Evidence |
+|---|---|---|
+| 0 | T0: ADR-0005 accepted, model v0.5.0 (53 entities, 27 BBs, 70 rels; +entity_role/completeness_contract mechanism; +Resource abstract root with 3 specializations in L3-resources; +IA/KA in L4-information-knowledge); terminology.abstract_entities broadened (same-layer category roots); schema declarations for the two new fields (3 negative controls verified); roadmap earmarks | PR #7, tag `v0.5.0` |
+| 1 | T1 dea-metamodel: generator passthrough fix (entity_role/completeness_contract — auto-sync alone dropped both); 6 new entity schemas; TS/TTL/pydantic regen; graph schema declarations; MFS sqlite_table drift fix | PR #71 |
+| 2 | T3 viewers: Pages graph v0.5.0 (53 ent / 70 rels) with governance fields live; SVG 53 entity markers, C2 styling, RES present; dea-web-viewer bundle verified live (new entities + BBs + completeness_contract in bundle) | live URLs |
+| 3 | T2: five new catalog repos earmarked (create-on-content, repo-per-specialization precedent) — no repos created | roadmap earmarks |
+
+Design-token note: the C2 diagram token pipeline (PR #70) handled the two new
+building blocks automatically — package colors cascaded from the model with no
+design work.
+
 ## Executed phases (ADR-0004 rollout, Aug 14 2026)
 
 | Phase | Scope | Evidence |
