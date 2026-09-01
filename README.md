@@ -1,6 +1,6 @@
 # DEA Architecture Framework — OpenDEAM
 
-> **OpenDEAM (Open Digital Enterprise Architecture Model)** — the root authority for the TechNeHub Labs DEA architecture: layers, building blocks, entity allocation, and relationships.
+> **OpenDEAM (Open Digital Enterprise Architecture Model)** is the root authority for the TechNeHub Labs DEA architecture: layers, building blocks, entity allocation, and relationships.
 
 [![Model Version](https://img.shields.io/badge/OpenDEAM-v0.5.0--alpha-2DD4BF?style=flat-square)](./VERSION)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)](LICENSE)
