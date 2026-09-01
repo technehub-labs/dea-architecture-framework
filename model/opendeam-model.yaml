@@ -1,5 +1,6 @@
 # ═══════════════════════════════════════════════════════════════════════════
 # OpenDEAM — Open Digital Enterprise Architecture Model (v0.5.0)
+# Author: Emmanuel A. Otchere (emmanuel@otchere.com)
 #
 # This file is the SINGLE SOURCE OF TRUTH for the DEA architecture:
 # layers → building blocks → entity allocation → relationships.
