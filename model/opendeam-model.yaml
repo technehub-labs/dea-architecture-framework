@@ -81,7 +81,7 @@ model:
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
-  supersedes: opendeam-model.yaml v0.4.0 (see ADR-0005)
+  supersedes: opendeam-model.yaml v0.5.0 (see ADR-0006)
 
 terminology:
   layer: >
@@ -498,14 +498,48 @@ allocation:
       description: A real-world entity of interest to the business (e.g. Customer, Order). The atom of the ECF matrix.
 
     - entity_id: dea:entity-process
+      class_alias: PRC
+      display_name: Process
+      layer: L3
+      building_block: L3-value-delivery
+      status: proposed
+      catalog_repo: null
+      abstract: true
+      discriminator: process-kernel
+      realized_in_layers: [L3]
+      entity_role: content
+      completeness_contract: >
+        Any T2 catalog specializing Process must declare its context
+        (Business, Operational, Engineering, etc.) via `specializes:`
+        on its metamodel pointer; the kernel itself is not directly
+        allocated to a layer. (CR-AR-FMWK-01; mirrors ADR-0005 D3
+        Resource template.)
+      legacy_ids:
+      - dea:entity-process         # semantic preservation (pre-kernel)
+      description: >
+        The OpenDEAM Process kernel (CR-MM-PROC-01; abstract; aligned
+        with WSF wsf:Process). Structural organization of activities
+        into a meaningful temporal/causal pattern. Specializations
+        carry the context (Business, Operational, Engineering).
+
+    - entity_id: dea:entity-business-process
       class_alias: BP
       display_name: Business Process
       layer: L3
       building_block: L3-value-delivery
       status: scaffold
       catalog_repo: dea-catalog-processes
+      specializes: PRC
       measured_by: [MTR]
-      description: A structured set of activities that produces a defined outcome.
+      entity_role: content
+      description: >
+        The OpenDEAM Business Process specialization (CR-MM-PROC-01;
+        CR-BP-SPEC-BP-01). A structured set of activities that
+        produces a defined outcome in the Business context.
+        Sub-classifications (operational / support / management,
+        carried by the catalog's process_intent field) are
+        catalog-internal; they do not promote to root-model
+        entities.
 
     - entity_id: dea:entity-business-service
       class_alias: BS
