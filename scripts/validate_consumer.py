@@ -8,6 +8,12 @@ this script checks that declaration against the pinned model.
 v0.2.0 (ADR-0002): dimension entities (no home layer, e.g. Performance Metric)
 declare `metamodel.dimension: <allocator-id>` instead of `metamodel.layer`.
 
+v0.6.0 (CR-AR-FMWK-01): abstract kernels (e.g. dea:entity-process) declared
+in the root model with `abstract: true` are realized by their specializations
+(e.g. dea:entity-business-process). The pointer may declare the kernel id
+standalone (in a multi-entity `entities:` list) without declaring a layer or
+dimension; the class_alias and discriminator checks still apply.
+
 Usage:
   python3 validate_consumer.py --model model/opendeam-model.yaml \
       --pointer path/to/metamodel-pointer.yaml
@@ -17,8 +23,11 @@ Checks:
   2. Layer-allocated entities: pointer.metamodel.layer matches the model.
      Dimension entities: pointer.metamodel.dimension names an orthogonal
      allocator declared by the model.
+     Abstract kernels: pointer must NOT declare layer or dimension.
   3. pointer.metamodel.class_alias matches the model.
   4. pointer.metamodel.version is a well-formed pin (vX.Y.Z[-tag]).
+  5. Discriminator (ADR-0002 D6): shared catalog_repo entities must declare
+     the discriminator in the pointer.
 
 Exit: 0 = consistent, 1 = drift detected (messages on stdout).
 """
@@ -41,7 +50,27 @@ def check_one(mm: dict, by_id: dict, allocator_ids: set, label: str, errors: lis
         errors.append(f"drift: {label} entity_id {entity_id} not in OpenDEAM model")
         return
     canon = by_id[entity_id]
-    if "layer" in canon:
+    if canon.get("abstract"):
+        # Abstract kernel (CR-AR-FMWK-01; mirrors ADR-0005 D3 Resource template).
+        # An abstract kernel is layer-allocated in the model (Resource kernel
+        # precedent) but its concrete instances (specializations) carry the
+        # context. The pointer declares the kernel id (typically in a
+        # multi-entity `entities:` list) without claiming a layer or dimension
+        # of its own; the consumer must NOT declare a layer or dimension for
+        # the kernel itself (the kernel's purpose is to be realized by
+        # specializations, not allocated to a layer directly).
+        if mm.get("layer"):
+            errors.append(
+                f"drift: {entity_id} is an abstract kernel in the model; "
+                f"{label} should not declare layer={mm.get('layer')} "
+                f"(the kernel is realized by its specializations)"
+            )
+        if mm.get("dimension"):
+            errors.append(
+                f"drift: {entity_id} is an abstract kernel in the model; "
+                f"{label} should not declare dimension={mm.get('dimension')}"
+            )
+    elif "layer" in canon:
         if mm.get("layer") != canon["layer"]:
             errors.append(
                 f"drift: {entity_id} layer={mm.get('layer')} in {label}, "
