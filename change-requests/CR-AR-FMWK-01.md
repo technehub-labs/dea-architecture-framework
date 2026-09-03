@@ -55,28 +55,38 @@ specialization id becomes `dea:entity-business-process`.
 ## 3. Architectural Decision
 
 **Decision AR-FMWK-01-D01** — Add `dea:entity-process` to the root
-model as an **abstract kernel entry**, allocated to **no layer**
-(mirrors the abstract `dea:Capability` precedent in `dea-metamodel`).
-The kernel declares `completeness_contract` for any T2 catalog
-specializing it: the T2 catalog must declare its specialization
-context (e.g. Business, Operational, Engineering) via `specializes:`
-in its pointer.
+model as an **abstract kernel entry**, allocated to **L3**
+(`layer: L3`; `building_block: L3-value-delivery`) with
+`discriminator: process-kernel`. The kernel declares
+`completeness_contract` for any T2 catalog specializing it: the T2
+catalog must declare its specialization context (e.g. Business,
+Operational, Engineering) via `specializes:` in its pointer.
+
+**Note**: an earlier draft of this CR proposed a kernel with **no
+layer allocation** (`layer: null`; only `realized_in_layers`).
+`scripts/validate_model.py` rejected that shape: an abstract entity
+must declare `realized_in_layers` (check #7), and `realized_in_layers`
+is an array of layer IDs from `architecture.layers` — so the kernel
+must declare at least one layer. Resource (ADR-0005) follows the same
+pattern (abstract + `layer: L3`). This matches the precedent and keeps
+the kernel's "abstract + completeness_contract" semantics intact.
 
 **Decision AR-FMWK-01-D02** — Add `dea:entity-business-process` to
 the root model as the **first Core specialization** of
 `dea:entity-process`. Allocated to `layer: L3`,
-`building_block: L3-value-delivery` (carried over from the
-existing `dea:entity-process` allocation; preserved by the
-discriminator). `specializes: dea:entity-process`.
+`building_block: L3-value-delivery`, with `class_alias: BP`
+(preserved from the prior allocation). `specializes: PRC` (the
+kernel's `class_alias`, per the schema constraint that `specializes`
+takes an alias, not an entity_id).
 
 **Decision AR-FMWK-01-D03** — The legacy root-model entry
-`dea:entity-process` is **retained** as an abstract kernel
-with `discriminator: process-kernel`. The legacy display_name
-"Business Process" is **renamed** to "Process" (kernel-true
-name); the new `dea:entity-business-process` carries the display_name
-"Business Process" (specialization-true name). The legacy alias is
-preserved for root-model consumers pinned to v0.5.x; the catalog's
-pointer declared migration target is `dea:entity-business-process`.
+`dea:entity-process` is **retained as the abstract kernel**, with
+`class_alias: PRC` (Process) and `display_name: Process` (the
+kernel-true name). A new entry `dea:entity-business-process` carries
+the legacy alias `BP` and the legacy `display_name: Business Process`.
+This preserves backward compatibility: existing consumers that
+reference `class_alias: BP` continue to resolve against the
+specialization, not the kernel.
 
 **Decision AR-FMWK-01-D04** — `scripts/validate_consumer.py` gains
 a third branch: if the root-model entity has `abstract: true`
@@ -120,21 +130,22 @@ Two coordinated edits to `allocation.entities[]` (around line 500):
 
    ```yaml
    - entity_id: dea:entity-process
-     class_alias: BP
+     class_alias: PRC
      display_name: Process
-     layer: null
-     building_block: null
-     status: normative
+     layer: L3
+     building_block: L3-value-delivery
+     status: proposed
      catalog_repo: null
      abstract: true
      discriminator: process-kernel
+     realized_in_layers: [L3]
      entity_role: content
      completeness_contract: >
        Any T2 catalog specializing Process must declare its context
-      (Business, Operational, Engineering, etc.) via `specializes:`
-      on its metamodel pointer; the kernel itself is not directly
-      allocated to a layer. (CR-AR-FMWK-01; mirrors ADR-0005 D3
-      Resource template.)
+       (Business, Operational, Engineering, etc.) via `specializes:`
+       on its metamodel pointer; the kernel itself is not directly
+       allocated to a layer. (CR-AR-FMWK-01; mirrors ADR-0005 D3
+       Resource template.)
      legacy_ids:
      - dea:entity-process         # semantic preservation
      description: >
@@ -154,7 +165,7 @@ Two coordinated edits to `allocation.entities[]` (around line 500):
      building_block: L3-value-delivery
      status: scaffold
      catalog_repo: dea-catalog-processes
-     specializes: dea:entity-process
+     specializes: PRC
      measured_by: [MTR]
      entity_role: content
      description: >
@@ -252,20 +263,21 @@ compliant.)
 
 - [ ] `model.version: 0.6.0` recorded.
 - [ ] `VERSION: 0.6.0` file content.
-- [ ] `dea:entity-process` declared as abstract kernel (no layer;
-      no building_block; `discriminator: process-kernel`;
-      `abstract: true`).
+- [ ] `dea:entity-process` declared as abstract kernel (`class_alias: PRC`;
+      `layer: L3`; `building_block: L3-value-delivery`; `status: proposed`;
+      `abstract: true`; `discriminator: process-kernel`;
+      `realized_in_layers: [L3]`; `completeness_contract`).
 - [ ] `dea:entity-business-process` declared as specialization
-      (`specializes: dea:entity-process`; layer L3; building_block
-      L3-value-delivery; `catalog_repo: dea-catalog-processes`).
+      (`class_alias: BP`; `layer: L3`; `building_block: L3-value-delivery`;
+      `specializes: PRC`; `catalog_repo: dea-catalog-processes`).
 - [ ] `scripts/validate_consumer.py` accepts abstract-kernel
       entities without requiring a `dimension:` field.
-- [ ] `scripts/validate_model.py` passes.
+- [ ] `scripts/validate_model.py` passes (54 entities; 70 relationships).
 - [ ] Local dry-run: the catalog's future pointer
       (`dea:entity-business-process` + `entities: [dea:entity-process]`)
       validates 0-drift against the new model.
 - [ ] ADR-0006 lands with all required sections.
-- [ ] CHANGELOG entry; README version bump.
+- [ ] README badge bumped to v0.6.0.
 
 ## 7. Out of Scope
 
