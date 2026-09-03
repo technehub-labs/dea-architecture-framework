@@ -77,7 +77,7 @@
 model:
   name: OpenDEAM — Open Digital Enterprise Architecture Model
   id: opendeam
-  version: 0.5.0
+  version: 0.6.0
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
