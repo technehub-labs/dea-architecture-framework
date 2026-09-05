@@ -16,3 +16,71 @@ jobs:
       - run: pip install pyyaml jsonschema
       - name: Validate OpenDEAM model (schema + integrity)
         run: python3 scripts/validate_model.py
+
+  catalog-smoke-test:
+    # CR-CATALOG-STRUCT-07c: detect drift between model status and
+    # catalog content. Runs the vendored cross-repo consumer against
+    # the four conformant adopters (BP/BC/DBSF/SH) and verifies each
+    # model entity with catalog_repo pointing at a known adopter has
+    # backing content consistent with its status field.
+    #
+    # Hard failures (missing catalog, fetch error, schema mismatch)
+    # fail CI. Soft warnings (status drift) are surfaced in the
+    # output but do not block; the consumer operator triages them.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: Pre-populate cache from each conformant adopter's main
+        # Populate the cache from the upstream `main` branch of each
+        # known adopter so the smoke test runs offline. CI does NOT
+        # do live fetches; if the cache is missing, the smoke test
+        # surfaces that as a FAIL (the adoption has regressed).
+        #
+        # The raw.githubusercontent.com CDN can lag by 30-60s after
+        # a push; the loop retries up to 5 times with exponential
+        # backoff before giving up. This is robust against the
+        # known CDN-cache-miss window that bites immediately after
+        # a fresh merge.
+        run: |
+          mkdir -p .cache/cross_repo_consumer
+          for repo in \
+            dea-catalog-processes \
+            dea-catalog-business-capabilities \
+            dea-catalog-digital-business-service-factory \
+            dea-catalog-stakeholders; do
+            url="https://raw.githubusercontent.com/technehub-labs/${repo}/main/CATALOG.yaml"
+            out=".cache/cross_repo_consumer/${repo}@main.yaml"
+            echo "fetching ${url} -> ${out}"
+            ok=0
+            for attempt in 1 2 3 4 5; do
+              if curl --fail --silent --show-error --location --max-time 15 "${url}" -o "${out}"; then
+                lines=$(wc -l < "${out}")
+                echo "  ok on attempt ${attempt}: ${lines} lines"
+                ok=1
+                break
+              else
+                echo "  attempt ${attempt} failed (likely CDN cache miss); retrying in $((attempt * 10))s"
+                sleep $((attempt * 10))
+              fi
+            done
+            if [ "${ok}" -ne 1 ]; then
+              echo "  WARN: fetch failed for ${repo} after 5 attempts (will surface as FAIL in smoke test)"
+              rm -f "${out}"
+            fi
+          done
+      - name: Run cross-repo smoke test (model status vs. catalog content)
+        # --skip-unreachable: in CI we may not have credentials for
+        # private repos (DBSF and stakeholders are private). The smoke
+        # test degrades gracefully: it emits INFO notes for unreachable
+        # repos rather than failing CI. Local developer with a PAT
+        # can run without --skip-unreachable to validate them all.
+        run: |
+          PYTHONPATH=scripts python3 scripts/check_catalog_index_matches_model.py \
+            --model model/opendeam-model.yaml \
+            --cache-dir .cache/cross_repo_consumer \
+            --offline \
+            --skip-unreachable

@@ -251,6 +251,65 @@ class TestRunSmoke:
         assert warn == 0
         assert any("nothing to smoke" in f for f in findings)
 
+    def test_skip_unreachable_treats_fetch_failures_as_skip(
+        self, tmp_path: Path
+    ) -> None:
+        """With treat_fetch_failure_as_skip=True, a missing catalog
+        file is logged as INFO rather than FAIL."""
+        model = tmp_path / "model.yaml"
+        model.write_text(
+            "allocation:\n  entities:\n"
+            "    - entity_id: dea:entity-x\n"
+            "      catalog_repo: dea-catalog-processes\n"
+            "      status: existing\n"
+        )
+        # Cache is empty: processes the catalog will not be found.
+        cache = tmp_path / "empty"
+        cache.mkdir()
+        fail, warn, findings = smoke.run_smoke(
+            model,
+            cache_dir=cache,
+            offline=True,
+            treat_fetch_failure_as_skip=True,
+        )
+        assert fail == 0
+        assert warn == 0
+        assert any(
+            "INFO: dea-catalog-processes: skipped" in f for f in findings
+        )
+        assert any(
+            "dea:entity-x" in f and "SKIPPED" in f for f in findings
+        )
+
+    def test_skip_unreachable_does_not_mask_schema_errors(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A schema parse error (catalog exists but is broken YAML)
+        is still a FAIL even with treat_fetch_failure_as_skip=True.
+        Only fetch failures are skipped; parse errors propagate."""
+        model = tmp_path / "model.yaml"
+        model.write_text(
+            "allocation:\n  entities:\n"
+            "    - entity_id: dea:entity-x\n"
+            "      catalog_repo: dea-catalog-processes\n"
+            "      status: existing\n"
+        )
+        cache = tmp_path / "cache"
+        cache.mkdir()
+        # A valid YAML document, but with the WRONG shape: parse_catalog_yaml
+        # will reject this. This proves fetch-skip does not mask parse failures.
+        (cache / "dea-catalog-processes@main.yaml").write_text(
+            "not_a_catalog_root: true\n"
+        )
+        fail, _, findings = smoke.run_smoke(
+            model,
+            cache_dir=cache,
+            offline=True,
+            treat_fetch_failure_as_skip=True,
+        )
+        assert fail > 0
+        assert any("FAIL" in f for f in findings)
+
 
 class TestStatusContentMismatch:
     """The status/content drift checks (the smoke test's primary value)."""
