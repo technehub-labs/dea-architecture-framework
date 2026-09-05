@@ -528,7 +528,7 @@ allocation:
       display_name: Business Process
       layer: L3
       building_block: L3-value-delivery
-      status: scaffold
+      status: existing
       catalog_repo: dea-catalog-processes
       specializes: PRC
       measured_by: [MTR]
