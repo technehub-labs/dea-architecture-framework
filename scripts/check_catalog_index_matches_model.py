@@ -177,8 +177,16 @@ def run_smoke(
     *,
     offline: bool = False,
     timeout_s: float = 15.0,
+    treat_fetch_failure_as_skip: bool = False,
 ) -> tuple[int, int, list[str]]:
-    """Run the smoke test; return (fail_count, warn_count, finding_lines)."""
+    """Run the smoke test; return (fail_count, warn_count, finding_lines).
+
+    Args:
+        treat_fetch_failure_as_skip: When True, a fetch failure for a
+            known adopter does NOT count as a fail. Instead it emits
+            an INFO note and is skipped. Useful in CI environments
+            that cannot reach private repos without a PAT.
+    """
     fail_count = 0
     warn_count = 0
     findings: list[str] = []
@@ -208,9 +216,28 @@ def run_smoke(
                 timeout_s=timeout_s,
                 offline=offline,
             )
+        except Exception as exc:  # noqa: BLE001 (CLI surface; surfacing all)
+            # Fetch-stage errors are the only ones that can be skipped.
+            # A 404 (private repo no PAT), a cache miss in offline mode,
+            # or a CDN timeout all land here.
+            if treat_fetch_failure_as_skip:
+                findings.append(
+                    f"INFO: {repo}: skipped (fetch error: "
+                    f"{type(exc).__name__}: {exc})"
+                )
+                continue
+            findings.append(f"FAIL: {repo}: {type(exc).__name__}: {exc}")
+            fail_count += 1
+            continue
+        try:
             catalogs[repo] = parse_catalog_yaml(fetch.bytes)
         except Exception as exc:  # noqa: BLE001 (CLI surface; surfacing all)
-            findings.append(f"FAIL: {repo}: {type(exc).__name__}: {exc}")
+            # Parse-stage errors are schema/content integrity issues.
+            # They are NOT skipped by --skip-unreachable; a broken
+            # catalog that was successfully fetched is still a real
+            # failure that the operator must fix.
+            findings.append(f"FAIL: {repo}: parse error: "
+                            f"{type(exc).__name__}: {exc}")
             fail_count += 1
 
     # Per-entity checks.
@@ -218,6 +245,15 @@ def run_smoke(
         if not entity_relevant_to_smoke(entity):
             continue
         entity_id, repo, entity_findings = check_one_entity(entity, catalogs)
+        # If the catalog was skipped (not in catalogs), all findings
+        # for this entity are SKIPPED at the entity level rather than
+        # FAIL (the consumer can't reach the repo, so it can't validate).
+        if repo not in catalogs:
+            findings.append(
+                f"  {entity_id} ({repo}): SKIPPED (catalog not reachable; "
+                f"verify manually with a PAT)"
+            )
+            continue
         for finding in entity_findings:
             findings.append(f"  {entity_id} ({repo}): {finding}")
             if finding.startswith("FAIL"):
@@ -255,6 +291,16 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Do not fetch; only read from --cache-dir.",
     )
     p.add_argument(
+        "--skip-unreachable",
+        action="store_true",
+        help=(
+            "Treat fetch failures as SKIP (do not fail CI). Useful when "
+            "some known adopters are private and the CI runner has no "
+            "PAT. The skipped repos are listed in the output so the "
+            "consumer operator can verify them manually with credentials."
+        ),
+    )
+    p.add_argument(
         "--timeout",
         type=float,
         default=15.0,
@@ -273,6 +319,7 @@ def main(argv: list[str] | None = None) -> int:
         cache_dir=args.cache_dir,
         offline=args.offline,
         timeout_s=args.timeout,
+        treat_fetch_failure_as_skip=args.skip_unreachable,
     )
     for line in findings:
         print(line)
