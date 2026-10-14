@@ -1,0 +1,38 @@
+# Cardinal authorship-field registry (CR-BP-118b; this repo's slice).
+# Adding a new field here is a CR-level change; do not edit casually.
+# The dea-architecture-framework repo uses **Author** (in CR doc
+# tables) and **Author:** (in ADRs) -- two different field shapes
+# because the ADR template has the colon inside the bold markers
+# while the CR template puts the colon outside.
+
+fields:
+  # CR doc metadata (table-row form, **Key** in a markdown table).
+  # Same as 118a baseline.
+  - path: "**Author**"               # CR doc table-row metadata
+    file_glob: "change-requests/CR-*.md"
+    kind: "metadata"
+
+  # ADR metadata (line form, **Key:** with colon INSIDE the bold
+  # markers; the ADR template convention). Architecture-framework-
+  # specific. The bounded-glob walker keeps this from leaking into
+  # other repos' ADRs.
+  - path: "**Author:**"              # ADR line metadata
+    file_glob: "docs/ADRs/*.md"
+    kind: "metadata"
+
+allowlist:
+  - "Emmanuel A. Otchere"
+  - "TechNeHub Labs"
+
+# Agent / tool names that may never appear in an authorship-bearing field.
+# `eaojnr` is allowed as a historical record (user handle alone, no agent prefix).
+denylist:
+  - "Coder"
+  - "Agent"
+  - "Hermes"
+  - "Claude"
+  - "GPT"
+  - "Cline"
+  - "OpenAI"
+  - "MiniMax"
+  - "MiniMax-M3"

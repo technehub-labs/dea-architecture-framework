@@ -9,7 +9,7 @@
 | **Scope** | `technehub-labs/dea-architecture-framework` |
 | **Predecessor** | CR-MM-PROC-01 (`dea-metamodel`, merged 2026-09-03; PR #163); WSF Foundational Semantic Synthesis §6 |
 | **Authority** | WSF (`wsf:Process`); `dea-metamodel` (canonical Core authority; declares `dea:Process` kernel + `dea:BusinessProcess` specialization); this root model ( lags downstream and must sync) |
-| **Author** | Coder (for eaojnr) |
+| **Author** | Emmanuel A. Otchere |
 | **Date** | 2026-09-03 |
 
 ## 1. Change Request
