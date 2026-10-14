@@ -106,4 +106,4 @@ The kernel + specialization discipline propagates through the layered authority 
 - **Predecessor CR (cross-repo):** CR-MM-PROC-01 (`dea-metamodel`; merged PR #163 / commit `1665209`).
 - **Cross-repo CRs gated on this ADR:** CR-BP-SPEC-BP-01 (`dea-catalog-processes`); CR-BP-02 (Process Context register).
 - **Date:** 2026-09-03.
-- **Author:** Coder (for eaojnr).
+- **Author:** Emmanuel A. Otchere.
