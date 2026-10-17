@@ -1,0 +1,114 @@
+# IS Semantic Architecture :: OpenDEAM-to-Metamodel Identifier Map (canonical)
+# CR-AR-FMWK-04 closure artefact. The canonical OpenDEAM-to-metamodel
+# identifier map for the IS Semantic Architecture programme (CR-017..CR-022).
+# This is the OpenDEAM-side counterpart of the dea-metamodel stub at
+# docs/is-semantic-architecture/opendeam-identifier-map.yaml.
+#
+# Format: open_deam_id  ->  metamodel_canonical_id  [CR, notes]
+
+mappings:
+  # CR-018 (D-1): System Function reconciliation
+  - open_deam: "dea:entity-system-function"
+    metamodel: "dea:InformationSystemFunction"
+    open_deam_class_alias: "SF"
+    metamodel_class_alias: "ISF"
+    cr: "CR-018"
+    disposition: "D-1"
+    note: "EGV-004 identity continuity; the legacy entity dea:entity-system-function is retained in OpenDEAM with class_alias SF; the new canonical entity in the metamodel is dea:InformationSystemFunction (class_alias ISF). Both are allocated to L5/L5-systems."
+    relationship: "supersedes"
+
+  # CR-019 (D-2): Component hierarchy reconciliation
+  - open_deam: "dea:entity-solution-component"
+    metamodel: "dea:SolutionComponent"
+    open_deam_class_alias: "SC"
+    cr: "CR-019"
+    disposition: "D-2"
+    note: "abstract reconciled from false to true; SC remains the abstract parent; ISC specialises SC"
+
+  - open_deam: "dea:entity-application-component"
+    metamodel: "dea:ApplicationComponent"
+    open_deam_class_alias: "APC"
+    cr: "CR-019"
+    disposition: "D-2"
+    note: "specialises dea:InformationSystemComponent in the metamodel; component_type discriminator retained for EGV-004"
+
+  - open_deam: "dea:entity-integration-component"
+    metamodel: "dea:IntegrationComponent"
+    open_deam_class_alias: "IGC"
+    cr: "CR-019"
+    disposition: "D-2"
+    note: "specialises dea:InformationSystemComponent in the metamodel; component_type discriminator retained for EGV-004"
+
+  - open_deam: "dea:entity-infrastructure-component"
+    metamodel: "dea:InfrastructureComponent"
+    open_deam_class_alias: "IFC"
+    cr: "CR-019"
+    disposition: "D-2"
+    note: "DRIFT-4 placement decision; direct child of dea:SolutionComponent (broader than the IS concern)"
+
+  - open_deam: "dea:entity-information-system-component"
+    metamodel: "dea:InformationSystemComponent"
+    open_deam_class_alias: "ISC"
+    cr: "CR-019"
+    disposition: "D-2"
+    note: "new abstract kind; cannot be instantiated; concrete specializations in OpenDEAM are APC and IGC (recorded via the ISC -> APC and ISC -> IGC realization edges added in CR-AR-FMWK-04)"
+
+  # CR-020 (D-3): Service reconciliation
+  - open_deam: "dea:entity-platform-service"
+    metamodel: "dea:PlatformService"
+    open_deam_class_alias: "PS"
+    cr: "CR-020"
+    disposition: "D-3"
+    note: "conditional specialisation; when genuine software-platform service, specializes dea:InformationSystemService in the metamodel. OpenDEAM records the conditional via the ISS -> PS realization edge (D-3)."
+
+  - open_deam: "dea:entity-information-system-service"
+    metamodel: "dea:InformationSystemService"
+    open_deam_class_alias: "ISS"
+    cr: "CR-020"
+    disposition: "D-3"
+    note: "new entity; specialises Core dea:entity-service in the metamodel; OpenDEAM does not allocate Core entities (the specialisation is recorded in the metamodel only)"
+
+  # CR-021 (D-4): API / Integration Interface reconciliation
+  - open_deam: "dea:entity-api"
+    metamodel: "dea:API"
+    open_deam_class_alias: "API"
+    cr: "CR-021"
+    disposition: "D-4"
+    note: "contract entity; in the metamodel, dea:API sources the new dea:specifies relationship targeting dea:IntegrationInterface. In OpenDEAM, this is recorded via the API -> IF 'specifies' edge (rel_type 'contract')."
+
+  - open_deam: "dea:entity-integration-interface"
+    metamodel: "dea:IntegrationInterface"
+    open_deam_class_alias: "IF"
+    cr: "CR-021"
+    disposition: "D-4"
+    note: "new entity; interaction boundary; targeted by dea:specifies from dea:API. The IF class_alias is used here to avoid collision with the existing II (Investment Initiative) alias in OpenDEAM."
+
+  # OpenDEAM-only entities (no metamodel counterpart; Profile metadata anchors)
+  - open_deam: "dea:entity-business-service"
+    metamodel: "dea:BusinessService"
+    open_deam_class_alias: "BS"
+    cr: null
+    disposition: null
+    note: "OpenDEAM-only entity; dea:BusinessService is allocated to L3/L3-service-offerings. No IS programme mapping."
+
+  - open_deam: "dea:entity-technology"
+    metamodel: "dea:Technology"
+    open_deam_class_alias: "TEC"
+    cr: null
+    disposition: null
+    note: "OpenDEAM-only entity; dea:Technology is allocated to L5/L5-technology. No IS programme mapping."
+
+  - open_deam: "dea:entity-business-process"
+    metamodel: "dea:BusinessProcess"
+    open_deam_class_alias: "BP"
+    cr: null
+    disposition: null
+    note: "OpenDEAM-only entity; dea:BusinessProcess is allocated to L3/L3-processes. No IS programme mapping."
+
+notes:
+  - "The map covers entity identifiers only; relationship identifier maps are owned by the relationship entries in the model (and the new relationships added in CR-AR-FMWK-04)."
+  - "The map is bidirectional: a reader can look up either open_deam or metamodel side."
+  - "The class_alias mapping is critical for OpenDEAM's MECE allocation pattern; the IF alias was chosen to avoid the II (Investment Initiative) collision."
+  - "The map does not include catalogue-level identifiers; those are owned by CR-IS-CAT-01..04."
+  - "The map does not include the rel_type controlled vocabulary mapping; the three new rel_type values (execution, serving, contract) are recorded in schemas/opendeam-model.schema.json."
+  - "CR-AR-FMWK-04 closure: the canonical OpenDEAM-to-metamodel identifier map is at docs/is-semantic-architecture/opendeam-identifier-map.yaml in this repository; the dea-metamodel stub at docs/is-semantic-architecture/opendeam-identifier-map.yaml is consumed by CR-AR-FMWK-04 and the catalog CRs."
