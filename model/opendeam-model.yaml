@@ -1,13 +1,29 @@
 # ═══════════════════════════════════════════════════════════════════════════
-# OpenDEAM — Open Digital Enterprise Architecture Model (v0.5.0)
+# OpenDEAM: Open Digital Enterprise Architecture Model (v0.7.0)
 # Author: Emmanuel A. Otchere (emmanuel@otchere.com)
 #
 # This file is the SINGLE SOURCE OF TRUTH for the DEA architecture:
-# layers → building blocks → entity allocation → relationships.
+# layers -> building blocks -> entity allocation -> relationships.
 #
-# CHANGE FROM v0.4.0 — see docs/ADRs/ADR-0005-opendeam-v0.5.0-metamodel-governance-resource-information.md
+# CHANGE FROM v0.6.0 -- see change-requests/CR-AR-FMWK-04 (post-CR-022 closure 2026-10-16)
+#   - New entities (L5): dea:entity-information-system-function (ISF; supersedes dea:entity-system-function),
+#     dea:entity-information-system-component (ISC; abstract; specialises SC),
+#     dea:entity-information-system-service (ISS; specialises Core dea:entity-service),
+#     dea:entity-integration-interface (IF; distinct from dea:entity-api).
+#   - New rel_type controlled vocabulary values: 'execution' (ISC -> ISF), 'serving'
+#     (ISC -> ISS; ISS -> IF), 'contract' (API -> IF; mirrors the new category
+#     'contract' (category M) introduced in dea-metamodel CR-021).
+#   - New relationships: ISC executes ISF, ISC composed of ISC, ISC provides ISS,
+#     ISS exposed via IF, API specifies IF (dea:specifies), ISS specializes PS
+#     (conditional per D-3), ISC specializes APC, ISC specializes IGC.
+#   - OpenDEAM-to-metamodel identifier map consumed from the dea-metamodel closure
+#     document at docs/is-semantic-architecture/opendeam-identifier-map.yaml.
+#   - Migration path: dea:entity-system-function is retained for EGV-004 identity
+#     continuity; the new ISF entity supersedes it.
+#
+# CHANGE FROM v0.5.0 -- see docs/ADRs/ADR-0005-opendeam-v0.5.0-metamodel-governance-resource-information.md
 #   - New terminology mechanism: entity_role (content|governance) and
-#     completeness_contract — the metamodel is now prescriptive, not just
+#     completeness_contract; the metamodel is now prescriptive, not just
 #     descriptive: category-root/governance entities define what a T2
 #     catalog must classify by to be MECE-complete. Applied so far only to
 #     the entities below (worked example); retrofitting the other 47 is
@@ -19,13 +35,13 @@
 #   - New: Resource (abstract, L3, new building block L3-resources) with
 #     specializations Financial/Physical/Intangible Resource.
 #   - New: Information Asset + Knowledge Asset (L4, new building block
-#     L4-information-knowledge) — completes Data->Information->Knowledge.
+#     L4-information-knowledge); completes Data->Information->Knowledge.
 #   - terminology.abstract_entities broadened (review follow-up): abstract now
 #     also covers same-layer category roots carrying a completeness_contract,
 #     not only cross-layer realization parents.
 #
-# CHANGE FROM v0.3.0 — see docs/ADRs/ADR-0004-opendeam-v0.4.0-l2-cleanup-vocabulary-purge.md
-#   - Removed: Viewpoint (out of scope — belongs to T3 tooling, not architecture).
+# CHANGE FROM v0.3.0 : see docs/ADRs/ADR-0004-opendeam-v0.4.0-l2-cleanup-vocabulary-purge.md
+#   - Removed: Viewpoint (out of scope : belongs to T3 tooling, not architecture).
 #   - Merged: Glossary Term + Taxonomy Node -> Concept, demoted to a new
 #     orthogonal_allocator "semantic-dimension" (any entity may carry defined_by).
 #   - Renamed + wired (previously orphaned, zero relationships each):
@@ -35,7 +51,7 @@
 #                                       maturity field: advisory..platform-enforced)
 #       Reference Model -> Blueprint  (composed of Architecture Pattern)
 #   - L2 building blocks: 7 -> 5 (L2-architecture-views, L2-semantics removed).
-#   - Standing rule added: no verbatim TOGAF/Zachman/ArchiMate terminology —
+#   - Standing rule added: no verbatim TOGAF/Zachman/ArchiMate terminology :
 #     see terminology.naming_philosophy.
 #   - Migration map (old entity_id -> new) for T2 consumers pinned to v0.3.x:
 #       dea:entity-principle       -> dea:entity-tenet       (alias PR  -> TNT)
@@ -44,9 +60,9 @@
 #       dea:entity-glossary-term + dea:entity-taxonomy-node -> dea:entity-concept (alias GT/TXN -> CON)
 #       dea:entity-viewpoint -> removed, no replacement (alias VP retired)
 #
-# CHANGE FROM v0.2.0 — see docs/ADRs/ADR-0003-opendeam-v0.3.0-comprehensiveness-expansion.md
+# CHANGE FROM v0.2.0 : see docs/ADRs/ADR-0003-opendeam-v0.3.0-comprehensiveness-expansion.md
 #   - New building blocks (comprehensiveness expansion, checked against the
-#     axiom-derivation/MECE/not-a-TOGAF-repeat filter — see ADR-0003):
+#     axiom-derivation/MECE/not-a-TOGAF-repeat filter : see ADR-0003):
 #       L1-ecosystem-platforms   (Ecosystem Platform)
 #       L2-risk-compliance       (Risk, Control, Regulation)
 #       L2-innovation-foresight  (Signal, Experiment, Technology Radar Entry)
@@ -55,15 +71,15 @@
 #   - New orthogonal_allocator: ai-automation-governance (governed_by field,
 #     reuses Risk/Control/Regulation rather than inventing AI-specific objects).
 #   - Deliberately NOT added: an "AI layer" and a "Sustainability" building
-#     block — see ADR-0003 "Explicitly rejected candidates".
+#     block : see ADR-0003 "Explicitly rejected candidates".
 #
-# CHANGE FROM v0.1.0 — see docs/ADRs/ADR-0002-opendeam-v0.2.0-structural-upgrade.md
+# CHANGE FROM v0.1.0 : see docs/ADRs/ADR-0002-opendeam-v0.2.0-structural-upgrade.md
 #   - Measurement (L6) demoted from a numbered layer to a cross-cutting
 #     orthogonal_allocator, parallel to the ECF matrix.
 #   - Collaboration Agreement moved L2 -> L1 (L1-agreements building block).
 #   - Entities gain: abstract, specializes, discriminator, ecf_coordinates, measured_by.
 #   - Relationships gain: rel_type (controlled vocabulary), cardinality.
-#     style is now DEPRECATED — derive it from rel_type in viewers.
+#     style is now DEPRECATED : derive it from rel_type in viewers.
 #   - status lifecycle formally defined (see terminology.lifecycle).
 #
 # Edit rules:
@@ -76,19 +92,19 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 model:
-  name: OpenDEAM — Open Digital Enterprise Architecture Model
+  name: 'OpenDEAM: Open Digital Enterprise Architecture Model'
   id: opendeam
-  version: 0.6.0
+  version: 0.7.0
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
-  supersedes: opendeam-model.yaml v0.5.0 (see ADR-0006)
+  supersedes: opendeam-model.yaml v0.6.0 (see CR-AR-FMWK-04; post-CR-022 closure 2026-10-16)
 
 terminology:
   layer: >
-    Architecture layer (L1–L5). Defined exclusively by this model; the word 'Layer' anywhere in
-    the org refers to these five. Measurement is NOT a layer as of v0.2.0 — see orthogonal_allocators.measurement-dimension.
-  building_block: Named grouping of entities within a layer — the architecture's components at first-level granularity.
+    Architecture layer (L1-L5). Defined exclusively by this model; the word 'Layer' anywhere in
+    the org refers to these five. Measurement is NOT a layer as of v0.2.0:see orthogonal_allocators.measurement-dimension.
+  building_block: Named grouping of entities within a layer:the architecture's components at first-level granularity.
   entity: A first-level architecture object allocated to exactly one layer and one building block (MECE), unless abstract=true (see below).
   abstract_entities: >
     An entity may be marked abstract:true in either of two forms: (a) a cross-layer realization
@@ -111,8 +127,8 @@ terminology:
     Metamodel, Zachman's cell labels, and ArchiMate's element catalog. A word match alone is not
     disqualifying (generic English like "Process," "Actor," "Service" is fine). A *conceptual*
     match to a classical-EA static-documentation artifact (catalog, matrix cell, reference model,
-    principle) requires the reframe test: does naming it around what it actually does — automate,
-    enforce, compose, link — change its relationships, or only its label? If only the label
+    principle) requires the reframe test: does naming it around what it actually does:automate,
+    enforce, compose, link:change its relationships, or only its label? If only the label
     changes, skip the rename. If relationships follow from the reframe, it's a real fix.
   metamodel_boundary: >
     Added in v0.5.0 (ADR-0005 D1). OpenDEAM is a metamodel (type-of-type); a T2 catalog is an
@@ -126,8 +142,8 @@ terminology:
     model by design, not by omission.
   entity_role: >
     Added in v0.5.0 (ADR-0005 D2). Optional field on an entity: content (an enterprise operates
-    with it; populated by T2 catalogs — e.g. Business Process, Data Entity, Financial Resource) or
-    governance (exists to constrain or define the shape of other entities' catalogs — e.g.
+    with it; populated by T2 catalogs:e.g. Business Process, Data Entity, Financial Resource) or
+    governance (exists to constrain or define the shape of other entities' catalogs:e.g.
     Concept, Architecture Pattern, Blueprint, Tenet, Guardrail). Applied so far only to entities
     introduced in ADR-0005 as a worked example; retrofitting the rest is a deferred future ADR.
   completeness_contract: >
@@ -142,7 +158,7 @@ architecture:
       name: Ecosystem & Value Network
       qualifier: External
       color: '#2DD4BF'
-      derivation: '"with its environment" — the exchange surface between the bounded enterprise and its ecosystem.'
+      derivation: '"with its environment":the exchange surface between the bounded enterprise and its ecosystem.'
       building_blocks:
         - id: L1-external-parties
           name: External Parties
@@ -152,37 +168,37 @@ architecture:
           name: Experience Points
         - id: L1-agreements
           name: Collaboration Agreements
-          note: Moved from L2 in v0.2.0 (ADR-0002 D2) — an agreement is a feature of the exchange surface, not internal governance.
+          note: Moved from L2 in v0.2.0 (ADR-0002 D2):an agreement is a feature of the exchange surface, not internal governance.
         - id: L1-ecosystem-platforms
           name: Ecosystem Platforms
-          note: Added in v0.3.0 (ADR-0003 D1) — multi-sided platform hosting, distinct from bilateral Value Exchange.
+          note: Added in v0.3.0 (ADR-0003 D1):multi-sided platform hosting, distinct from bilateral Value Exchange.
 
     - id: L2
       name: Strategic & Governance
       qualifier: Intent & Rules
       color: '#FBBF24'
-      derivation: '"persists" — intent to persist expressed as objectives, and the rules that constrain behaviour.'
+      derivation: '"persists":intent to persist expressed as objectives, and the rules that constrain behaviour.'
       building_blocks:
         - id: L2-intent
           name: Strategic Intent
         - id: L2-rules-guidance
           name: Tenets & Guardrails
-          note: Renamed in v0.4.0 (ADR-0004 D3/D4) from "Rules & Guidance" — Principle renamed Tenet, Standard renamed Guardrail, both now wired to real relationships.
+          note: Renamed in v0.4.0 (ADR-0004 D3/D4) from "Rules & Guidance":Principle renamed Tenet, Standard renamed Guardrail, both now wired to real relationships.
         - id: L2-reusable-knowledge
           name: Patterns & Blueprints
-          note: Renamed in v0.4.0 (ADR-0004 D5) from "Reusable Knowledge" — Reference Model renamed Blueprint, now composed of Architecture Pattern.
+          note: Renamed in v0.4.0 (ADR-0004 D5) from "Reusable Knowledge":Reference Model renamed Blueprint, now composed of Architecture Pattern.
         - id: L2-risk-compliance
           name: Risk & Compliance
-          note: Added in v0.3.0 (ADR-0003 D2) — "persists" requires managing existential/regulatory risk as a condition, not an activity layered on top.
+          note: Added in v0.3.0 (ADR-0003 D2):"persists" requires managing existential/regulatory risk as a condition, not an activity layered on top.
         - id: L2-innovation-foresight
           name: Innovation & Foresight
-          note: Added in v0.3.0 (ADR-0003 D3) — sensing environmental change before it forces adaptation; formal home for pre-adoption AI/tech tracking.
+          note: Added in v0.3.0 (ADR-0003 D3):sensing environmental change before it forces adaptation; formal home for pre-adoption AI/tech tracking.
 
     - id: L3
       name: Business Operating Model
       qualifier: Internal
       color: '#38BDF8'
-      derivation: '"bounded entity" — how the enterprise internally organises and performs work.'
+      derivation: '"bounded entity":how the enterprise internally organises and performs work.'
       building_blocks:
         - id: L3-work-organization
           name: Work Organization
@@ -194,16 +210,16 @@ architecture:
           name: Service Offerings
         - id: L3-people-skills-culture
           name: People, Skills & Culture
-          note: Added in v0.3.0 (ADR-0003 D4) — capability of the people themselves and the change effort to shift it, distinct from formal structure.
+          note: Added in v0.3.0 (ADR-0003 D4):capability of the people themselves and the change effort to shift it, distinct from formal structure.
         - id: L3-resources
           name: Enterprise Resources
-          note: Added in v0.5.0 (ADR-0005 D3) — the tangible/economic substrate a bounded entity maintains to persist, distinct from what it exchanges (L1) or builds digitally (L4/L5). Makes the model hold for a non-digital-native small business, not only a platform business.
+          note: Added in v0.5.0 (ADR-0005 D3):the tangible/economic substrate a bounded entity maintains to persist, distinct from what it exchanges (L1) or builds digitally (L4/L5). Makes the model hold for a non-digital-native small business, not only a platform business.
 
     - id: L4
       name: Digital & Intelligence
       qualifier: Data & Brain
       color: '#A78BFA'
-      derivation: '"exchanging value" (digital plane) — the digital representation of work and the intelligence applied to it.'
+      derivation: '"exchanging value" (digital plane):the digital representation of work and the intelligence applied to it.'
       building_blocks:
         - id: L4-digital-trust
           name: Digital Trust
@@ -217,16 +233,16 @@ architecture:
           name: Events & Streams
         - id: L4-model-operations
           name: Model Operations
-          note: Added in v0.3.0 (ADR-0003 D5) — deployment/monitoring/retraining lifecycle of AI/ML Models, parallel to how L5 separates Systems from Infrastructure. Deliberately not a top-level "AI layer" — see ADR-0003.
+          note: Added in v0.3.0 (ADR-0003 D5):deployment/monitoring/retraining lifecycle of AI/ML Models, parallel to how L5 separates Systems from Infrastructure. Deliberately not a top-level "AI layer":see ADR-0003.
         - id: L4-information-knowledge
           name: Information & Knowledge
-          note: Added in v0.5.0 (ADR-0005 D4) — completes Data->Information->Knowledge on the digital plane. Wisdom deliberately excluded (fails the non-generic-derivation filter).
+          note: Added in v0.5.0 (ADR-0005 D4):completes Data->Information->Knowledge on the digital plane. Wisdom deliberately excluded (fails the non-generic-derivation filter).
 
     - id: L5
       name: Technology & Execution
       qualifier: Systems & Infra
       color: '#FB7185'
-      derivation: '"persists" (execution plane) — the substrate that executes and hosts the digital plane.'
+      derivation: '"persists" (execution plane):the substrate that executes and hosts the digital plane.'
       building_blocks:
         - id: L5-systems
           name: Systems & Applications
@@ -253,7 +269,7 @@ architecture:
       owner_repo: technehub-labs/dea-architecture-framework
       kind: cross-cutting evaluative overlay (not a layer as of v0.2.0)
       description: >
-        Replaces the former L6 layer (see ADR-0002 D1). Any entity in L1–L5 may declare
+        Replaces the former L6 layer (see ADR-0002 D1). Any entity in L1-L5 may declare
         measured_by: [metric entity_ids]. Metric entities declare scope_layers to state which
         layers they are permitted to evaluate. This models "persistence over time requires
         feedback" as a dimension applied across the architecture rather than a sixth layer.
@@ -267,7 +283,7 @@ architecture:
         Added in v0.3.0 (ADR-0003 D6). Any AI-driven entity (Actor of AI-agent subtype, AI/ML Model,
         or a System Function with an enhances/automates relationship from an AIM) may declare
         governed_by: [Risk/Control/Regulation entity_ids], reusing L2-risk-compliance entities
-        rather than inventing AI-specific governance objects. Deliberately not a separate layer —
+        rather than inventing AI-specific governance objects. Deliberately not a separate layer :
         see ADR-0003 explicit rejection of a "Responsible AI" layer.
       reference: null
 
@@ -278,8 +294,8 @@ architecture:
       description: >
         Added in v0.4.0 (ADR-0004 D2), replacing the L2-semantics building block. Merges the
         former Glossary Term and Taxonomy Node into a single Concept entity. Any entity across
-        L1–L5 may carry defined_by: [Concept ids]. Framed as a queryable concept graph rather
-        than a static glossary document — consistent with modern data-catalog/knowledge-graph
+        L1-L5 may carry defined_by: [Concept ids]. Framed as a queryable concept graph rather
+        than a static glossary document:consistent with modern data-catalog/knowledge-graph
         practice rather than classical EA's documentation-shelf model.
       reference: null
 
@@ -292,7 +308,7 @@ allocation:
       building_block: L1-external-parties
       status: planned
       catalog_repo: null
-      description: 'External party that actively exchanges value with the enterprise — supplier, customer, regulator, partner.'
+      description: 'External party that actively exchanges value with the enterprise:supplier, customer, regulator, partner.'
 
     - entity_id: dea:entity-journey-touchpoint
       class_alias: JT
@@ -319,7 +335,7 @@ allocation:
       building_block: L1-value-flows
       status: planned
       catalog_repo: null
-      description: A flow of value between the enterprise and an ecosystem actor — information, goods, or funds; inbound or outbound.
+      description: A flow of value between the enterprise and an ecosystem actor:information, goods, or funds; inbound or outbound.
 
     - entity_id: dea:entity-collaboration-agreement
       class_alias: CA
@@ -328,7 +344,7 @@ allocation:
       building_block: L1-agreements
       status: planned
       catalog_repo: null
-      description: Terms governing cooperation with an ecosystem actor — cooperative or mandated.
+      description: Terms governing cooperation with an ecosystem actor:cooperative or mandated.
       migration_note: Reallocated from L2-agreements to L1-agreements in v0.2.0 (ADR-0002 D2).
 
     - entity_id: dea:entity-ecosystem-platform
@@ -361,7 +377,7 @@ allocation:
         A canonical, definable unit of meaning (business term or classification node) that other
         entities link to via defined_by. Merged from Glossary Term + Taxonomy Node in v0.4.0
         (ADR-0004 D2); framed as a queryable concept graph, not a static glossary document. No
-        longer allocated to a layer/building_block — belongs to orthogonal_allocators.semantic-dimension.
+        longer allocated to a layer/building_block:belongs to orthogonal_allocators.semantic-dimension.
 
     - entity_id: dea:entity-investment-initiative
       class_alias: II
@@ -379,7 +395,7 @@ allocation:
       building_block: L2-rules-guidance
       status: planned
       catalog_repo: dea-catalog-tenets
-      migration_note: Renamed from Principle (PR) in v0.4.0 (ADR-0004 D3) — a non-binding belief that informs Guardrails, rather than a standalone documentation-catalog entry.
+      migration_note: Renamed from Principle (PR) in v0.4.0 (ADR-0004 D3):a non-binding belief that informs Guardrails, rather than a standalone documentation-catalog entry.
       description: A non-binding, human-authored belief that guides decisions (e.g. API-first, prefer managed services). Informs one or more Guardrails; enforces nothing on its own.
 
     - entity_id: dea:entity-blueprint
@@ -389,7 +405,7 @@ allocation:
       building_block: L2-reusable-knowledge
       status: planned
       catalog_repo: dea-catalog-blueprints
-      migration_note: Renamed from Reference Model (RM) in v0.4.0 (ADR-0004 D5) — now explicitly composed of Architecture Patterns rather than standing alone.
+      migration_note: Renamed from Reference Model (RM) in v0.4.0 (ADR-0004 D5):now explicitly composed of Architecture Patterns rather than standing alone.
       description: A composed, reusable target-state design assembled from Architecture Patterns, providing a template for solution design.
 
     - entity_id: dea:entity-strategic-objective
@@ -409,10 +425,10 @@ allocation:
       status: planned
       catalog_repo: dea-catalog-guardrails
       enforcement: automated-block
-      migration_note: Renamed from Standard (STD) in v0.4.0 (ADR-0004 D4) — now governs Technology/Solution Component and implements Control, closing the gap where Technology claimed to be "governed via Standards" with no such relationship existing.
+      migration_note: Renamed from Standard (STD) in v0.4.0 (ADR-0004 D4):now governs Technology/Solution Component and implements Control, closing the gap where Technology claimed to be "governed via Standards" with no such relationship existing.
       description: >
         An enforceable constraint on technology or solution choices. Carries an enforcement
-        maturity level (advisory | automated-warn | automated-block | platform-enforced) —
+        maturity level (advisory | automated-warn | automated-block | platform-enforced) :
         modeling policy-as-code / platform-guardrail practice rather than a static compliance
         document someone checks against manually.
 
@@ -477,7 +493,7 @@ allocation:
       building_block: L3-work-organization
       status: scaffold
       catalog_repo: dea-catalog-actors
-      description: A performer of enterprise processes — human, team, system, or AI agent.
+      description: A performer of enterprise processes:human, team, system, or AI agent.
 
     - entity_id: dea:entity-business-function
       class_alias: BF
@@ -734,7 +750,7 @@ allocation:
       status: proposed
       catalog_repo: dea-catalog-information-assets
       entity_role: content
-      description: Data given context and form for a specific consuming purpose (a report, dashboard, invoice) — distinct from the raw Data Entity it's contextualized from.
+      description: Data given context and form for a specific consuming purpose (a report, dashboard, invoice):distinct from the raw Data Entity it's contextualized from.
 
     - entity_id: dea:entity-knowledge-asset
       class_alias: KA
@@ -744,7 +760,7 @@ allocation:
       status: proposed
       catalog_repo: dea-catalog-knowledge-assets
       entity_role: content
-      description: Applied know-how made explicit and durable, existing independent of any one Actor — distinct from Skill (L3), which an Actor personally possesses.
+      description: Applied know-how made explicit and durable, existing independent of any one Actor:distinct from Skill (L3), which an Actor personally possesses.
 
     - entity_id: dea:entity-model-deployment
       class_alias: MDP
@@ -825,6 +841,52 @@ allocation:
       catalog_repo: dea-catalog-system-functions
       measured_by: [MTR]
       description: A functional capability exposed by a single application or system.
+      # CR-AR-FMWK-04 (post-CR-022 closure 2026-10-16): the legacy SF entity
+      # is retained in the OpenDEAM model for EGV-004 identity continuity;
+      # dea:entity-information-system-function is the new canonical id
+      # (introduced in dea-metamodel CR-018 D-1 disposition). See
+      # metamodel_cross_reference below and the dea-metamodel closure
+      # document at docs/is-semantic-architecture/opendeam-identifier-map.yaml.
+
+    - entity_id: dea:entity-information-system-function
+      class_alias: ISF
+      display_name: Information System Function
+      layer: L5
+      building_block: L5-systems
+      status: planned
+      catalog_repo: dea-catalog-information-system-functions
+      supersedes: dea:entity-system-function
+      measured_by: [MTR]
+      description: "A defined unit of functional behaviour performed by an information system or one of its components. CR-AR-FMWK-04 (OpenDEAM extension; post-CR-022 closure 2026-10-16); introduced in dea-metamodel CR-018 (D-1 disposition); supersedes dea:entity-system-function (the legacy SF identity retained for EGV-004 identity continuity)."
+
+    - entity_id: dea:entity-information-system-component
+      class_alias: ISC
+      display_name: Information System Component
+      layer: L5
+      building_block: L5-systems
+      status: planned
+      catalog_repo: dea-catalog-information-system-components
+      discriminator: component_type
+      specializes: SC
+      description: "An identifiable architectural constituent of an information system that encapsulates a defined responsibility, structure or execution boundary. CR-AR-FMWK-04; introduced in dea-metamodel CR-019 (D-2 disposition); abstract kind that ApplicationComponent and IntegrationComponent specialise. Specialises dea:entity-solution-component (the parent abstract kind per ADR-0002 D3)."
+
+    - entity_id: dea:entity-information-system-service
+      class_alias: ISS
+      display_name: Information System Service
+      layer: L5
+      building_block: L5-integration
+      status: planned
+      catalog_repo: dea-catalog-information-system-services
+      description: "A service provided by an information system or a software platform to a consumer, expressed as a contract about the exchange of capability, functionality or data. CR-AR-FMWK-04; introduced in dea-metamodel CR-020 (D-3 disposition); specialises Core dea:entity-service. The dea:entity-platform-service conditional specialisation (D-3) is recorded in the metamodel canonical source. Note: OpenDEAM does not allocate Core entities; the specialisation to Core dea:entity-service is recorded in the metamodel only, not in the OpenDEAM allocation (matches the pattern for dea:entity-business-service and other Profile-level services)."
+
+    - entity_id: dea:entity-integration-interface
+      class_alias: IF
+      display_name: Integration Interface
+      layer: L5
+      building_block: L5-integration
+      status: planned
+      catalog_repo: dea-catalog-information-system-integration-interfaces
+      description: "A defined interaction boundary between an information system (or one of its components) and one or more internal or external consumers or providers, specifying the means, protocols, interaction patterns and contractual constraints through which information or functionality is exchanged. CR-AR-FMWK-04; introduced in dea-metamodel CR-021 (D-4 disposition); distinct from dea:entity-api (the contract that may specify it). Class alias IF is used here to avoid collision with the existing Investment Initiative alias II."
 
     - entity_id: dea:entity-technology
       class_alias: TEC
@@ -845,7 +907,7 @@ allocation:
       description: >
         A measured quantity used to evaluate outcomes against targets.
         MECE taxonomy: kpi | health | maturity | performance | adoption | compliance | risk.
-        No longer allocated to a layer/building_block as of v0.2.0 — belongs to
+        No longer allocated to a layer/building_block as of v0.2.0:belongs to
         orthogonal_allocators.measurement-dimension instead (ADR-0002 D1).
 
 repository_tiers:
@@ -856,7 +918,7 @@ repository_tiers:
   - tier: T1
     role: machine-schemas
     repos: [dea-metamodel]
-    note: Consumer. Entity schemas, TTL, SQLite, TS/Pydantic types, viewer graph — all generated from / pinned to this model.
+    note: Consumer. Entity schemas, TTL, SQLite, TS/Pydantic types, viewer graph:all generated from / pinned to this model.
   - tier: T2
     role: catalogs
     repos: [dea-catalog-*]
@@ -871,7 +933,7 @@ repository_tiers:
 #   label            : human-readable (unchanged from v0.1.0)
 #   rel_type         : realization | composition | aggregation | dependency | flow | governance | association
 #   cardinality      : "<from-side>:<to-side>", each side in {0..1, 1, 0..N, 1..N}
-#   style            : DEPRECATED — derive from rel_type in viewers; retained for T3 back-compat only
+#   style            : DEPRECATED : derive from rel_type in viewers; retained for T3 back-compat only
 relationships:
   - {from: SO, to: II,  label: drives,                    rel_type: governance,   cardinality: "1:0..N"}
   - {from: II, to: CAP, label: funds,                     rel_type: governance,   cardinality: "1:0..N"}
@@ -932,7 +994,7 @@ relationships:
   - {from: MFS, to: EVT, label: derived from,                   rel_type: dependency,   cardinality: "0..N:0..N"}
   - {from: MFS, to: AIM, label: triggers retraining of,          rel_type: dependency,   cardinality: "0..N:0..N"}
 
-  # --- v0.4.0 additions (ADR-0004) — closing the six previously-orphaned L2 entities ---
+  # --- v0.4.0 additions (ADR-0004) : closing the six previously-orphaned L2 entities ---
   - {from: TNT, to: GRD, label: informs,                         rel_type: dependency,   cardinality: "0..N:0..N"}
   - {from: GRD, to: CTL, label: implements,                       rel_type: realization,  cardinality: "0..N:1"}
   - {from: GRD, to: TEC, label: governs,                          rel_type: governance,   cardinality: "0..N:0..N"}
@@ -949,3 +1011,18 @@ relationships:
   - {from: IA,  to: AC,  label: consumed by,                         rel_type: flow,         cardinality: "0..N:0..N"}
   - {from: KA,  to: AC,  label: captured from,                       rel_type: dependency,   cardinality: "0..N:0..N"}
   - {from: KA,  to: TNT, label: informs,                             rel_type: dependency,   cardinality: "0..N:0..N"}
+  # CR-AR-FMWK-04 (post-CR-022 closure 2026-10-16): the four new
+  # Information Systems entities are added to OpenDEAM, plus the new
+  # contract relationship (dea:specifies) and the canonical
+  # component-to-function execution edge. The contract rel_type
+  # mirrors the new category introduced in dea-metamodel CR-021
+  # (D-4 audit-then-specifies posture).
+  - {from: ISF, to: ISC, label: executed by,                         rel_type: realization,  cardinality: "0..N:1..N"}
+  - {from: ISC, to: ISF, label: executes,                            rel_type: execution,    cardinality: "1:0..N"}
+  - {from: ISC, to: ISC, label: composed of,                         rel_type: composition,  cardinality: "1:0..N"}
+  - {from: ISC, to: ISS, label: provides,                            rel_type: serving,      cardinality: "1:0..N"}
+  - {from: ISS, to: IF,  label: exposed via,                         rel_type: serving,      cardinality: "1:0..N"}
+  - {from: API, to: IF,  label: specifies,                           rel_type: contract,     cardinality: "0..N:0..N"}
+  - {from: ISS, to: PS,  label: specializes (conditional per D-3),   rel_type: realization,  cardinality: "0..N:0..N"}
+  - {from: ISC, to: APC, label: specializes,                         rel_type: realization,  cardinality: "0..N:0..N"}
+  - {from: ISC, to: IGC, label: specializes,                         rel_type: realization,  cardinality: "0..N:0..N"}
