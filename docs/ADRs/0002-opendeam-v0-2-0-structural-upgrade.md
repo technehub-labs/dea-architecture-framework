@@ -1,5 +1,14 @@
 # ADR-0002: OpenDEAM v0.2.0 — Structural Upgrade
 
+> **Layout note (CR-BP-mv1, 2026-09-20):** This ADR was authored against the
+> pre-rename repo names (`dea-catalog-processes`,
+> `dea-catalog-digital-business-service-factory`) and may cite the pre-migration
+> entity layout (`entities/v1-alpha/dea:*`, `contexts/v1-alpha/`) and the legacy
+> `dea:*` id family. Names, paths, and ids cited below are historical; see
+> `dea-catalog-business-processes/reconciliation/migration-id-map.yaml` for the
+> old-to-new id mapping and the dea-metaframework `docs/entity-storage-layout.md`
+> for the current containment tree.
+
 **Status:** Accepted
 **Supersedes:** opendeam-model.yaml v0.1.0 (alpha)
 **Version bump:** MINOR (0.1.0 → 0.2.0) — per the model's own edit rules, this is a structural change (layer re-scoping, new dimension, entity re-allocation) and therefore requires this ADR.
