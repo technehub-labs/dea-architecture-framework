@@ -7,6 +7,21 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+### CR-AR-FMWK-07: Skill (SKL) & Change Initiative (CHI) Status Promotion (proposed → planned)
+
+Forward lifecycle transitions for `dea:entity-skill` (SKL) and
+`dea:entity-change-initiative` (CHI), both L3, L3-people-skills-culture:
+`status: proposed` → `status: planned`, one line each in
+`model/allocation.entities`. Same evidence class as CR-AR-FMWK-06:
+`dea-catalog-skills` and `dea-catalog-change-initiatives` both exist with
+the foundation-first scaffold but no `CATALOG.yaml` and no canonical
+entries — the exact `planned` state per the STRUCT-07c status↔content
+contract. Completes the promotion of the entire L3-people-skills-culture
+building block out of `proposed`. Patch bump v0.7.2 → v0.7.3 in both
+`VERSION` and `model.version`. All other fields, the `SKL → ROL` and
+`CHI → OU` relationships, and every other entity unchanged. Carrier:
+`change-requests/CR-AR-FMWK-07-skl-chi-status-promotion.md`.
+
 ### CR-AR-FMWK-06: Role (ROL) Status Promotion (proposed → planned)
 
 Forward lifecycle transition for `dea:entity-role` (ROL, L3,
