@@ -209,6 +209,19 @@ def main() -> int:
                         f"{[u for u in users if u != e['class_alias']]} but declares no discriminator (ADR-0002 D6)"
                     )
 
+    # 10. supersedes (entity identity supersession, CR-AR-FMWK-13) — targets
+    # must exist as entity_ids and must not chain (a predecessor is terminal).
+    ids_set = set(ids)
+    superseders_by_id = {e["entity_id"]: e for e in entities if e.get("supersedes")}
+    for e in entities:
+        target = e.get("supersedes")
+        if not target:
+            continue
+        if target not in ids_set:
+            errors.append(f"integrity: {e['class_alias']} supersedes unknown entity_id {target}")
+        elif target in superseders_by_id:
+            errors.append(f"integrity: {e['class_alias']} supersedes {target} which itself declares supersedes (no chains)")
+
     # 9. VERSION matches model.version
     if VERSION.exists() and VERSION.read_text().strip() != model["model"]["version"]:
         errors.append(

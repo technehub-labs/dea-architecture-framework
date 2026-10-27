@@ -1,7 +1,7 @@
 model:
   name: 'OpenDEAM: Open Digital Enterprise Architecture Model'
   id: opendeam
-  version: 0.8.0
+  version: 0.8.1
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
@@ -71,6 +71,16 @@ terminology:
     catalog to be complete), not merely descriptive (defines what a catalog may contain).
 
     '
+  supersedes: 'Entity identity supersession (CR-AR-FMWK-13). An entity MAY declare supersedes:
+    <predecessor entity_id> when it has taken over the predecessor''s architectural role at
+    the model level; the predecessor retains its identity for consumer continuity (EGV-004).
+    Distinct from the metric programme''s instance-level supersedes relation (a newer authoritative
+    value for the same period) and from the Core dea:replaces (the target is retired). The
+    retirement path for entities remains the lifecycle states deprecated/retired (which require
+    an ADR + minor bump).
+
+    '
+
 architecture:
   layers:
   - id: L1

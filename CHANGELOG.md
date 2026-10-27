@@ -7,6 +7,20 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+### CR-AR-FMWK-13: Supersedes/Replaces Vocabulary Resolution + Schema Hygiene
+
+Resolves the CR-AR-FMWK-09 §4 deferral: entity identity supersession stays the
+entity-level `supersedes` field (ISF precedent, EGV-004 continuity);
+instance-level supersession stays with the metric programme; replacement/
+retirement stays the Core `dea:replaces` + the existing deprecated/retired
+lifecycle states. No `supersedes` rel_type value added. Closes a hygiene
+gap: `supersedes` (ISF) and `legacy_ids` (PRC) were used in the model but
+undeclared in the schema — both now declared. Adds `terminology.supersedes`
+and validator rule 10 (targets must exist as entity_ids, no chains) with 3
+negative controls verified. Patch bump v0.8.0 → v0.8.1. No entity or
+relationship content changes. Carrier:
+`change-requests/CR-AR-FMWK-13-supersedes-vocabulary.md`.
+
 ## [v0.8.0] - 2026-10-27
 
 ADR-0007 (core anchor promotion), executed by CR-AR-FMWK-12. The
