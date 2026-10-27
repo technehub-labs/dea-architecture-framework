@@ -1,7 +1,7 @@
 model:
   name: 'OpenDEAM: Open Digital Enterprise Architecture Model'
   id: opendeam
-  version: 0.7.2
+  version: 0.7.3
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
@@ -599,7 +599,7 @@ allocation:
     display_name: Skill
     layer: L3
     building_block: L3-people-skills-culture
-    status: proposed
+    status: planned
     catalog_repo: dea-catalog-skills
     description: A capability an individual Actor possesses or must develop. Distinct from Business Capability,
       which belongs to the enterprise, not a person.
@@ -617,7 +617,7 @@ allocation:
     display_name: Change Initiative
     layer: L3
     building_block: L3-people-skills-culture
-    status: proposed
+    status: planned
     catalog_repo: dea-catalog-change-initiatives
     description: A deliberate effort to shift Skills, Roles, or culture within an Organizational Unit,
       typically funded by an Investment Initiative.
