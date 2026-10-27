@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/technehub-labs/dea-architecture-framework/blob/main/schemas/opendeam-model.schema.json",
-  "title": "OpenDEAM \u2014 Open Digital Enterprise Architecture Model",
-  "description": "Schema for model/opendeam-model.yaml \u2014 the single source of truth for DEA architecture layers, building blocks, entity allocation, and relationships. v0.2.0: measurement is an orthogonal dimension (not a layer); entities may be abstract with cross-layer realization; relationships carry rel_type + cardinality.",
+  "title": "OpenDEAM — Open Digital Enterprise Architecture Model",
+  "description": "Schema for model/opendeam-model.yaml — the single source of truth for DEA architecture layers, building blocks, entity allocation, and relationships. v0.2.0: measurement is an orthogonal dimension (not a layer); entities may be abstract with cross-layer realization; relationships carry rel_type + cardinality.",
   "type": "object",
   "required": [
     "model",
@@ -368,7 +368,7 @@
                   "type": "string",
                   "maxLength": 5
                 },
-                "description": "ADR-0004 D2 \u2014 aliases of Concept (semantic-dimension) entities defining this entity."
+                "description": "ADR-0004 D2 — aliases of Concept (semantic-dimension) entities defining this entity."
               },
               "parent_concept": {
                 "type": [
@@ -376,7 +376,18 @@
                   "null"
                 ],
                 "maxLength": 5,
-                "description": "ADR-0004 D2 \u2014 alias of the parent Concept in the concept graph (null/omitted = root)."
+                "description": "ADR-0004 D2 — alias of the parent Concept in the concept graph (null/omitted = root)."
+              },
+              "supersedes": {
+                "type": "string",
+                "description": "Entity identity supersession: this entity has taken over the architectural role of the named predecessor entity (by entity_id). The predecessor keeps its identity for continuity (EGV-004). See terminology.supersedes (CR-AR-FMWK-13)."
+              },
+              "legacy_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Historical identifiers this entity was previously known by (ADR-0006 kernel discipline)."
               }
             }
           }
