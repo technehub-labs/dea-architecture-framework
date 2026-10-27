@@ -7,6 +7,12 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+## [v0.7.7] - 2026-10-27
+
+Consolidation release of the lifecycle truth-up and Metric programme
+completion (CR-AR-FMWK-06 through CR-AR-FMWK-11; tags v0.7.2–v0.7.7).
+70 entities (14 dimension), 27 building blocks, 113 relationships.
+
 ### CR-AR-FMWK-11: Metric Dimension-Entity Lifecycle Promotion (proposed → planned)
 
 Closes the CR-AR-FMWK-08 §8 deferral with a documented governance
