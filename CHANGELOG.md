@@ -7,6 +7,19 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+### CR-AR-FMWK-14: Concept (CON) Status Promotion + CR-AR-FMWK-08 Record Correction
+
+Corrects a factual error in CR-AR-FMWK-08 §4: `dea-catalog-concepts` was
+recorded nonexistent due to a transient GitHub API 404 during that audit; it
+has existed since 2026-07-21 (the renamed `dea-catalog-glossary`, ADR-0004
+D2, absorbing `dea-catalog-taxonomy`), with continuous history through
+CR-CON-01/02 and a full governance foundation. No `CATALOG.yaml`, zero
+canonical entries — exactly the CR-06/07 `planned` evidence class. One-line
+promotion `proposed → planned` for `dea:entity-concept`; roadmap
+disposition-corrected note added. FR, PHR, INR, IA, KA re-verified genuinely
+absent — create-on-content holds for them. Patch bump v0.8.1 → v0.8.2.
+Carrier: `change-requests/CR-AR-FMWK-14-con-promotion.md`.
+
 ### CR-AR-FMWK-13: Supersedes/Replaces Vocabulary Resolution + Schema Hygiene
 
 Resolves the CR-AR-FMWK-09 §4 deferral: entity identity supersession stays the

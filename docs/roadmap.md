@@ -106,6 +106,16 @@ structurally by repo separation. Confirmed as the precedent for future
 category roots (ADR-0005 review amendment 3). Resource itself is abstract and
 carries `catalog_repo: null` — no RES catalog.
 
+**CON correction (CR-AR-FMWK-14, 2026-10-27):** `dea-catalog-concepts` was
+long thought to be in this create-on-content class (and CR-AR-FMWK-08 §4
+recorded it as nonexistent — a transient GitHub API 404 during that audit).
+It has in fact existed since 2026-07-21: it is the renamed
+`dea-catalog-glossary` (v0.4.0, ADR-0004 D2, absorbing `dea-catalog-taxonomy`),
+has carried the CON pointer since the v0.4.0 rollout, and carries the full
+governance foundation. With zero canonical entries it is the `planned`
+evidence class, and CON was promoted `proposed → planned` (v0.8.2). The five
+repos above remain genuinely absent — create-on-content still holds for them.
+
 ### `entity_role` / `completeness_contract` retrofit (future ADR)
 
 Retrofit the two ADR-0005 governance fields onto the 47 pre-v0.5.0 entities
