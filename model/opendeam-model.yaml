@@ -1,7 +1,7 @@
 model:
   name: 'OpenDEAM: Open Digital Enterprise Architecture Model'
   id: opendeam
-  version: 0.7.1
+  version: 0.7.2
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
@@ -608,7 +608,7 @@ allocation:
     display_name: Role
     layer: L3
     building_block: L3-people-skills-culture
-    status: proposed
+    status: planned
     catalog_repo: dea-catalog-roles
     description: A defined set of required Skills and responsibilities that an Actor fulfills within an
       Organizational Unit.
