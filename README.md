@@ -2,7 +2,7 @@
 
 > **OpenDEAM (Open Digital Enterprise Architecture Model)** is the root authority for the TechNeHub Labs DEA architecture: layers, building blocks, entity allocation, and relationships.
 
-[![Model Version](https://img.shields.io/badge/OpenDEAM-v0.6.0--alpha-2DD4BF?style=flat-square)](./VERSION)
+[![Model Version](https://img.shields.io/badge/OpenDEAM-v0.7.7--alpha-2DD4BF?style=flat-square)](./VERSION)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)](LICENSE)
 
 ## What this is
@@ -22,11 +22,11 @@ Everything else in the organisation — `dea-metamodel` schemas and viewer graph
 |---|---|---|---|
 | **L1** | Ecosystem & Value Network | External | 6 |
 | **L2** | Strategic & Governance | Intent & Rules | 12 |
-| **L3** | Business Operating Model | Internal | 16 |
+| **L3** | Business Operating Model | Internal | 17 |
 | **L4** | Digital & Intelligence | Data & Brain | 10 |
-| **L5** | Technology & Execution | Systems & Infra | 7 |
+| **L5** | Technology & Execution | Systems & Infra | 11 |
 
-Plus 2 dimension entities (`Concept`, `Performance Metric`) allocated to the orthogonal dimensions below, not to any layer — 54 first-level entities in total (v0.6.0).
+Plus 14 dimension entities (13 Metric-programme entities + `Concept`) allocated to the orthogonal dimensions below, not to any layer — 70 first-level entities in total (v0.7.7).
 
 Plus two orthogonal dimensions: the **Measurement Dimension** (`Performance Metric` — measurable entities declare `measured_by`, metrics declare `scope_layers`; ADR-0002 D1) and **AI & Automation Governance** (AI-driven entities may declare `governed_by: [Risk/Control/Regulation]`; ADR-0003 D6). See the ADRs for why these are dimensions, not layers.
 
@@ -47,9 +47,9 @@ Consumers pin a model **tag** and validate against it:
 # In a consumer repo's workflow (e.g. dea-catalog-processes)
 jobs:
   allocation:
-    uses: technehub-labs/dea-architecture-framework/.github/workflows/validate-against-model.yml@v0.6.0
+    uses: technehub-labs/dea-architecture-framework/.github/workflows/validate-against-model.yml@v0.7.7
     with:
-      model_ref: v0.6.0
+      model_ref: v0.7.7
       pointer_file: metamodel-pointer.yaml
 ```
 
@@ -64,13 +64,13 @@ jobs:
 | New entity / building block / relationship | PR + **patch** version bump |
 | Every PR | `scripts/validate_model.py` passes |
 
-See [`docs/ADRs/`](docs/ADRs/) — 0001 governance · 0002 structural upgrade (v0.2.0) · 0003 comprehensiveness expansion (v0.3.0) · 0004 L2 cleanup & vocabulary purge (v0.4.0) · 0005 metamodel governance + Resource & Information/Knowledge (v0.5.0).
+See [`docs/ADRs/`](docs/ADRs/) — 0001 governance · 0002 structural upgrade (v0.2.0) · 0003 comprehensiveness expansion (v0.3.0) · 0004 L2 cleanup & vocabulary purge (v0.4.0) · 0005 metamodel governance + Resource & Information/Knowledge (v0.5.0) · 0006 process kernel specialization (v0.6.0).
 
-## Downstream sync status (2026-08-16)
+## Downstream sync status (2026-10-27)
 
-- **v0.5.0 (ADR-0005)** added `Resource` (abstract) with three specializations (Financial / Physical / Intangible, L3), `Information Asset` and `Knowledge Asset` (L4), and the `entity_role` / `completeness_contract` governance fields.
-- **Consumed downstream by `dea-metamodel` v0.6.0–v0.9.0** (CR-001 canonical metamodel, CR-002 relationship ontology, CR-003 normalization, CR-004 core ontology, 2026-08-16). The CR-004 Core/Profile split introduces 10 new core anchors that are **not yet in this root model** — promoting them upstream is the candidate content of the next minor release (**v0.6.0**, ADR forthcoming).
-- **Known pin drift, documented not silent:** T2 catalog `metamodel-pointer.yaml` files currently pin `v0.2.1` (auto-generated, do-not-edit). They regenerate from this repo's fan-out when the next root-model release lands — not by hand-edit in catalog repos.
+- **v0.7.1 (CR-AR-FMWK-05)** allocated the twelve Metric programme entities. **v0.7.2–v0.7.7 (CR-AR-FMWK-06..11)** delivered the lifecycle truth-up: 12 layer-entity promotions to `planned` on catalog evidence, 24 intra-capability Metric edges, the 9-entity `measured_by` integration surface, and the 12 dimension-entity promotions with the dimension-lifecycle convention. 113 relationships total.
+- **Consumed downstream by `dea-metamodel`**: the fan-out dispatch (`fan-out.yml` → `opendeam-model-changed` receiver) fires on every model/VERSION change on main; the metamodel regenerates derived artifacts and the T2 catalog pointers regenerate from its fan-out.
+- **Known pin drift, documented not silent:** T2 catalog `metamodel-pointer.yaml` files pin older tags (auto-generated, do-not-edit). They regenerate from the sync chain when it processes the release — not by hand-edit in catalog repos.
 
 ## Repository map
 
@@ -91,7 +91,7 @@ T3  dea-cli, dea-web-viewer, technehub-labs.github.io  ← tooling & viewers (co
 │   ├── validate_model.py              # schema + referential integrity (CI)
 │   └── validate_consumer.py           # consumer pointer drift check
 ├── docs/
-│   ├── ADRs/                          # 0001–0005 (see Change control)
+│   ├── ADRs/                          # 0001–0006 (see Change control)
 │   ├── allocation-rationale.md        # 5→6 layer mapping + boundary rules
 │   └── roadmap.md
 └── .github/workflows/
