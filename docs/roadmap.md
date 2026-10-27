@@ -4,6 +4,20 @@ The single program-level plan for the OpenDEAM rollout across the org.
 Phase detail lives in the ADRs and PR history; this file tracks **what is
 done, what is live, and what is earmarked for future action**.
 
+## Executed phases (ADR-0007 rollout, Oct 27 2026)
+
+| Phase | Scope | Evidence |
+|---|---|---|
+| 0 | T0: ADR-0007 accepted; CR-AR-FMWK-12 executed — 10 CR-004 Core anchors promoted (5 abstract kernels AE/BEH/SRV/INF/ORG + 5 concretes DEC/OUT/REQ/CST/CHG); 8 entities re-parented via `specializes`; 5 specialization edges; 10 identifier-map identity mappings; model 70 → 80 entities, 113 → 118 relationships; v0.7.7 → v0.8.0 minor bump | PR #29 (ADR), CR-AR-FMWK-12 (implementation), tag pending |
+| 1 | T1 `dea-metamodel`: authority already carries the anchors (CR-004); sync-chain regen of derived artifacts on the v0.8.0 fan-out dispatch | sync run |
+| 2 | T3 viewers: new entities flow via the sync chain on the fan-out | live URLs |
+| 3 | T2: no new catalog repos (all ten `catalog_repo: null`, create-on-content) | — |
+
+Prior release: v0.7.7 (CR-AR-FMWK-06..11 consolidation — lifecycle truth-up,
+12 layer-entity promotions, Metric programme completion: 24 intra-capability
+edges + 9-entity `measured_by` integration surface + 12 dimension-entity
+promotions with the dimension-lifecycle convention).
+
 ## Executed phases (ADR-0005 rollout, Aug 15 2026)
 
 | Phase | Scope | Evidence |
