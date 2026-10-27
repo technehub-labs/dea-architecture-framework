@@ -7,6 +7,21 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+### CR-AR-FMWK-06: Role (ROL) Status Promotion (proposed → planned)
+
+Forward lifecycle transition for `dea:entity-role` (ROL, L3,
+L3-people-skills-culture): `status: proposed` → `status: planned`, one
+line in `model/allocation.entities`. Evidence: `dea-catalog-roles` exists
+with the foundation-first scaffold (README entity detail, LICENSE, NOTICE,
+`metamodel-pointer.yaml`) but no `CATALOG.yaml` and no canonical Role
+entries — the exact `planned` state per the STRUCT-07c status↔content
+contract. Patch bump v0.7.1 → v0.7.2 in both `VERSION` and `model.version`
+(forward transition = PR + patch bump, no ADR). All other ROL fields, both
+ROL relationships (`SKL → ROL` required by, `ROL → AC` fulfilled by), and
+every other entity unchanged. Sibling promotions (SKL, CHI) deferred to a
+follow-on audit CR. Carrier:
+`change-requests/CR-AR-FMWK-06-role-status-promotion.md`.
+
 ### CR-AR-FMWK-03: Entity System Cross-Reference (Architecture Framework Slice)
 
 Architecture Framework cross-reference slice of the General Entity System institutionalisation (cross-repo cascade T7 of the umbrella programme). The Architecture Framework repo is an architecture framework (ADRs) repo; it does not contain entity records and does NOT adopt the entity-system gate. This PR records the cross-reference to `dea-governance` (DEA-ID-000 + CR-012) and enumerates the Architecture Framework repo's commitments to the General Entity System standard. D-004 clean. 118a/b/c authorship gates remain CONFORMANT.
