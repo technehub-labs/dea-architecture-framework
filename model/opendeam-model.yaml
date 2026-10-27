@@ -1,7 +1,7 @@
 model:
   name: 'OpenDEAM: Open Digital Enterprise Architecture Model'
   id: opendeam
-  version: 0.7.7
+  version: 0.8.0
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
@@ -465,6 +465,13 @@ allocation:
     building_block: L3-business-information
     status: scaffold
     catalog_repo: dea-catalog-business-objects
+    class_alias: BO
+    display_name: Business Object
+    layer: L3
+    building_block: L3-business-information
+    status: scaffold
+    catalog_repo: dea-catalog-business-objects
+    specializes: INF
     ecf_coordinates:
       domain: null
       stage: null
@@ -477,6 +484,13 @@ allocation:
     building_block: L3-value-delivery
     status: proposed
     catalog_repo: null
+    class_alias: PRC
+    display_name: Process
+    layer: L3
+    building_block: L3-value-delivery
+    status: proposed
+    catalog_repo: null
+    specializes: BEH
     abstract: true
     discriminator: process-kernel
     realized_in_layers:
@@ -518,6 +532,13 @@ allocation:
     building_block: L3-service-offerings
     status: existing
     catalog_repo: dea-catalog-digital-business-service-factory
+    class_alias: BS
+    display_name: Business Service
+    layer: L3
+    building_block: L3-service-offerings
+    status: existing
+    catalog_repo: dea-catalog-digital-business-service-factory
+    specializes: SRV
     description: A service exposed to the business or to external consumers. Composite of capabilities,
       realised by solution components.
   - entity_id: dea:entity-capability
@@ -546,6 +567,19 @@ allocation:
     building_block: L3-work-organization
     status: scaffold
     catalog_repo: dea-catalog-organizational-units
+    class_alias: OU
+    display_name: Organizational Unit
+    layer: L3
+    building_block: L3-work-organization
+    status: scaffold
+    catalog_repo: dea-catalog-organizational-units
+    class_alias: OU
+    display_name: Organizational Unit
+    layer: L3
+    building_block: L3-work-organization
+    status: scaffold
+    catalog_repo: dea-catalog-organizational-units
+    specializes: ORG
     measured_by:
     - MTR
     description: A unit of organisation that owns capabilities, runs processes, and is custodian for business
@@ -704,6 +738,19 @@ allocation:
     building_block: L4-data-foundation
     status: planned
     catalog_repo: dea-catalog-data-entities
+    class_alias: DE
+    display_name: Data Entity
+    layer: L4
+    building_block: L4-data-foundation
+    status: planned
+    catalog_repo: dea-catalog-data-entities
+    class_alias: DE
+    display_name: Data Entity
+    layer: L4
+    building_block: L4-data-foundation
+    status: planned
+    catalog_repo: dea-catalog-data-entities
+    specializes: INF
     measured_by:
     - MTR
     description: A persistent data structure (table, document, graph node) that realises one or more business
@@ -724,6 +771,13 @@ allocation:
     building_block: L4-data-products
     status: planned
     catalog_repo: dea-catalog-data-products
+    class_alias: DP
+    display_name: Data Product
+    layer: L4
+    building_block: L4-data-products
+    status: planned
+    catalog_repo: dea-catalog-data-products
+    specializes: INF
     description: A curated, discoverable, governed dataset or data service with clear ownership and SLAs
       (data-mesh pattern).
   - entity_id: dea:entity-event
@@ -749,6 +803,13 @@ allocation:
     building_block: L4-information-knowledge
     status: proposed
     catalog_repo: dea-catalog-information-assets
+    class_alias: IA
+    display_name: Information Asset
+    layer: L4
+    building_block: L4-information-knowledge
+    status: proposed
+    catalog_repo: dea-catalog-information-assets
+    specializes: INF
     entity_role: content
     description: Data given context and form for a specific consuming purpose (a report, dashboard, invoice):distinct
       from the raw Data Entity it's contextualized from.
@@ -759,6 +820,13 @@ allocation:
     building_block: L4-information-knowledge
     status: proposed
     catalog_repo: dea-catalog-knowledge-assets
+    class_alias: KA
+    display_name: Knowledge Asset
+    layer: L4
+    building_block: L4-information-knowledge
+    status: proposed
+    catalog_repo: dea-catalog-knowledge-assets
+    specializes: INF
     entity_role: content
     description: Applied know-how made explicit and durable, existing independent of any one Actor:distinct
       from Skill (L3), which an Actor personally possesses.
@@ -1085,6 +1153,124 @@ allocation:
     - L5
     description: A testable claim that one quantity causes another, carrying a mechanism, counter-evidence,
       and a falsification test.
+  - entity_id: dea:entity-architecture-element
+    class_alias: AE
+    display_name: Architecture Element
+    layer: L2
+    building_block: L2-reusable-knowledge
+    status: planned
+    catalog_repo: null
+    abstract: true
+    realized_in_layers:
+    - L2
+    - L3
+    - L4
+    - L5
+    description: 'An identifiable element that participates in an architectural description of an enterprise (CR-004
+      s5; ADR-0007 D1). Not merely anything that appears in the repository.'
+  - entity_id: dea:entity-behavior
+    class_alias: BEH
+    display_name: Behavior
+    layer: L3
+    building_block: L3-value-delivery
+    status: planned
+    catalog_repo: null
+    abstract: true
+    realized_in_layers:
+    - L3
+    - L4
+    - L5
+    description: 'Abstract concept for enterprise activity (CR-004 s9; ADR-0007 D1). Profiles specialize Process,
+      Activity, Workflow, BusinessFunction, AgentTask, Automation.'
+  - entity_id: dea:entity-service
+    class_alias: SRV
+    display_name: Service
+    layer: L3
+    building_block: L3-service-offerings
+    status: planned
+    catalog_repo: null
+    abstract: true
+    realized_in_layers:
+    - L3
+    - L5
+    description: 'A means through which a provider exposes value or capability to a consumer without requiring the
+      consumer to manage the underlying implementation (CR-004 s10; ADR-0007 D1). Abstract Core anchor,
+      distinct from dea:entity-business-service (BS), the concrete L3 specialization (CR-AR-FMWK-10 s2).'
+  - entity_id: dea:entity-information
+    class_alias: INF
+    display_name: Information
+    layer: L4
+    building_block: L4-data-foundation
+    status: planned
+    catalog_repo: null
+    abstract: true
+    realized_in_layers:
+    - L3
+    - L4
+    description: 'Abstract foundation for all information specializations (CR-004 s12; ADR-0007 D1). Profiles define
+      DataEntity, BusinessObject, InformationAsset, KnowledgeAsset, DataProduct, Dataset.'
+  - entity_id: dea:entity-organization
+    class_alias: ORG
+    display_name: Organization
+    layer: L3
+    building_block: L3-work-organization
+    status: planned
+    catalog_repo: null
+    abstract: true
+    realized_in_layers:
+    - L1
+    - L3
+    description: 'Organizational structure, distinct from Actor agency (CR-004 s7; ADR-0007 D1). An organization can
+      act as an Actor; structure and agency are different semantic concerns.'
+  - entity_id: dea:entity-decision
+    class_alias: DEC
+    display_name: Decision
+    layer: L2
+    building_block: L2-intent
+    status: planned
+    catalog_repo: null
+    description: 'A determination made by an Actor, system or Agent that selects or authorizes a course of action
+      based on information, rules, objectives and constraints (CR-004 s13; ADR-0007 D2). Foundation for
+      agentic architecture (CR-7).'
+  - entity_id: dea:entity-outcome
+    class_alias: OUT
+    display_name: Outcome
+    layer: L2
+    building_block: L2-intent
+    status: planned
+    catalog_repo: null
+    description: 'A resulting state or value (CR-004 s14; ADR-0007 D2). Capability is an ability; Outcome is a result.
+      Anchor for strategy, value, DMM, transformation and measurement.'
+  - entity_id: dea:entity-requirement
+    class_alias: REQ
+    display_name: Requirement
+    layer: L2
+    building_block: L2-rules-guidance
+    status: planned
+    catalog_repo: null
+    description: 'A stated need, obligation or condition that an architecture, solution, service or behavior must
+      satisfy (CR-004 s15; ADR-0007 D2). Profiles specialize business, regulatory, security, data,
+      technology, AI. Distinct from Guardrail: a Requirement must be satisfied; a Guardrail enforces.'
+  - entity_id: dea:entity-constraint
+    class_alias: CST
+    display_name: Constraint
+    layer: L2
+    building_block: L2-rules-guidance
+    status: planned
+    catalog_repo: null
+    description: 'Something that limits the possible solution space (CR-004 s16; ADR-0007 D2). Distinct from
+      Requirement: a Requirement must be satisfied; a Constraint limits options.'
+  - entity_id: dea:entity-change
+    class_alias: CHG
+    display_name: Change
+    layer: L3
+    building_block: L3-people-skills-culture
+    status: planned
+    catalog_repo: null
+    description: 'A deliberate modification to enterprise capabilities, behavior, services, information, technology,
+      organization or operating model (CR-004 s17; ADR-0007 D2). Foundation for transformation, roadmap,
+      transition architecture and migration. Sibling of CHI (CHI targets people/culture specifically;
+      CHG is the general modification).'
 repository_tiers:
 - tier: T0
   role: root-model
@@ -1676,3 +1862,28 @@ relationships:
   label: evaluated by
   rel_type: governance
   cardinality: 1:0..N
+- from: PRC
+  to: BEH
+  label: specializes
+  rel_type: realization
+  cardinality: 0..N:1
+- from: BS
+  to: SRV
+  label: specializes
+  rel_type: realization
+  cardinality: 0..N:1
+- from: BO
+  to: INF
+  label: specializes
+  rel_type: realization
+  cardinality: 0..N:1
+- from: OU
+  to: ORG
+  label: specializes
+  rel_type: realization
+  cardinality: 0..N:1
+- from: DE
+  to: INF
+  label: specializes
+  rel_type: realization
+  cardinality: 0..N:1

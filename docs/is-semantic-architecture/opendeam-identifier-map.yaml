@@ -215,3 +215,83 @@ notes:
   assigned canonically in dea-metamodel and are unique there. dea:IntegrationInterface was II in the metamodel
   and is now IFI, because II was bound to dea:entity-investment-initiative in the consumed viewer graph;
   this continues the earlier IF choice, which avoided the same collision for InfrastructureComponent.'
+- open_deam: dea:entity-architecture-element
+  metamodel: dea:ArchitectureElement
+  open_deam_class_alias: AE
+  metamodel_class_alias: ArchitectureElement
+  cr: CR-004
+  disposition: D-1
+  note: ADR-0007 core anchor promotion; identity mapping — the OpenDEAM root-model entry mirrors the
+    Core anchor; definitions authoritative in dea-metamodel/metamodel/core/core-entities.yaml.
+- open_deam: dea:entity-behavior
+  metamodel: dea:Behavior
+  open_deam_class_alias: BEH
+  metamodel_class_alias: Behavior
+  cr: CR-004
+  disposition: D-1
+  note: ADR-0007 core anchor promotion; identity mapping — the OpenDEAM root-model entry mirrors the
+    Core anchor; definitions authoritative in dea-metamodel/metamodel/core/core-entities.yaml.
+- open_deam: dea:entity-service
+  metamodel: dea:Service
+  open_deam_class_alias: SRV
+  metamodel_class_alias: Service
+  cr: CR-004
+  disposition: D-1
+  note: ADR-0007 core anchor promotion; identity mapping — the OpenDEAM root-model entry mirrors the
+    Core anchor; definitions authoritative in dea-metamodel/metamodel/core/core-entities.yaml.
+- open_deam: dea:entity-information
+  metamodel: dea:Information
+  open_deam_class_alias: INF
+  metamodel_class_alias: Information
+  cr: CR-004
+  disposition: D-1
+  note: ADR-0007 core anchor promotion; identity mapping — the OpenDEAM root-model entry mirrors the
+    Core anchor; definitions authoritative in dea-metamodel/metamodel/core/core-entities.yaml.
+- open_deam: dea:entity-organization
+  metamodel: dea:Organization
+  open_deam_class_alias: ORG
+  metamodel_class_alias: Organization
+  cr: CR-004
+  disposition: D-1
+  note: ADR-0007 core anchor promotion; identity mapping — the OpenDEAM root-model entry mirrors the
+    Core anchor; definitions authoritative in dea-metamodel/metamodel/core/core-entities.yaml.
+- open_deam: dea:entity-decision
+  metamodel: dea:Decision
+  open_deam_class_alias: DEC
+  metamodel_class_alias: Decision
+  cr: CR-004
+  disposition: D-1
+  note: ADR-0007 core anchor promotion; identity mapping — the OpenDEAM root-model entry mirrors the
+    Core anchor; definitions authoritative in dea-metamodel/metamodel/core/core-entities.yaml.
+- open_deam: dea:entity-outcome
+  metamodel: dea:Outcome
+  open_deam_class_alias: OUT
+  metamodel_class_alias: Outcome
+  cr: CR-004
+  disposition: D-1
+  note: ADR-0007 core anchor promotion; identity mapping — the OpenDEAM root-model entry mirrors the
+    Core anchor; definitions authoritative in dea-metamodel/metamodel/core/core-entities.yaml.
+- open_deam: dea:entity-requirement
+  metamodel: dea:Requirement
+  open_deam_class_alias: REQ
+  metamodel_class_alias: Requirement
+  cr: CR-004
+  disposition: D-1
+  note: ADR-0007 core anchor promotion; identity mapping — the OpenDEAM root-model entry mirrors the
+    Core anchor; definitions authoritative in dea-metamodel/metamodel/core/core-entities.yaml.
+- open_deam: dea:entity-constraint
+  metamodel: dea:Constraint
+  open_deam_class_alias: CST
+  metamodel_class_alias: Constraint
+  cr: CR-004
+  disposition: D-1
+  note: ADR-0007 core anchor promotion; identity mapping — the OpenDEAM root-model entry mirrors the
+    Core anchor; definitions authoritative in dea-metamodel/metamodel/core/core-entities.yaml.
+- open_deam: dea:entity-change
+  metamodel: dea:Change
+  open_deam_class_alias: CHG
+  metamodel_class_alias: Change
+  cr: CR-004
+  disposition: D-1
+  note: ADR-0007 core anchor promotion; identity mapping — the OpenDEAM root-model entry mirrors the
+    Core anchor; definitions authoritative in dea-metamodel/metamodel/core/core-entities.yaml.

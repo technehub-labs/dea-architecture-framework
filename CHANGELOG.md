@@ -7,6 +7,21 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+## [v0.8.0] - 2026-10-27
+
+ADR-0007 (core anchor promotion), executed by CR-AR-FMWK-12. The
+CR-004 Core/Profile split is now reflected upstream: 5 abstract
+kernels (ArchitectureElement AE, Behavior BEH, Service SRV, Information
+INF, Organization ORG) + 5 concrete entities (Decision DEC, Outcome OUT
+in L2-intent; Requirement REQ, Constraint CST in L2-rules-guidance;
+Change CHG in L3-people-skills-culture), all status planned, catalog_repo
+null. 8 existing entities re-parented via one `specializes` field each
+(PRC→BEH, BS→SRV, BO/DE/IA/KA/DP→INF, OU→ORG) + 5 specialization
+edges. 10 identity mappings added to the identifier map. Model: 70 →
+80 entities, 113 → 118 relationships. No existing entity_id,
+class_alias, layer, building_block, or status changed; no validator or
+schema change.
+
 ## [v0.7.7] - 2026-10-27
 
 Consolidation release of the lifecycle truth-up and Metric programme
