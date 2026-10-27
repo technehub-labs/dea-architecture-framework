@@ -1,7 +1,7 @@
 model:
   name: 'OpenDEAM: Open Digital Enterprise Architecture Model'
   id: opendeam
-  version: 0.7.6
+  version: 0.7.7
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
@@ -932,7 +932,7 @@ allocation:
   - entity_id: dea:entity-measurement
     class_alias: MMT
     display_name: Measurement
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -945,7 +945,7 @@ allocation:
   - entity_id: dea:entity-measurement-observation
     class_alias: MOBS
     display_name: Measurement Observation
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -958,7 +958,7 @@ allocation:
   - entity_id: dea:entity-indicator-designation
     class_alias: IDS
     display_name: Indicator Designation
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -971,7 +971,7 @@ allocation:
   - entity_id: dea:entity-baseline
     class_alias: BSL
     display_name: Baseline
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -984,7 +984,7 @@ allocation:
   - entity_id: dea:entity-performance-target
     class_alias: PTG
     display_name: Performance Target
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -997,7 +997,7 @@ allocation:
   - entity_id: dea:entity-threshold
     class_alias: THR
     display_name: Threshold
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -1010,7 +1010,7 @@ allocation:
   - entity_id: dea:entity-performance-interpretation
     class_alias: PIT
     display_name: Performance Interpretation
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -1023,7 +1023,7 @@ allocation:
   - entity_id: dea:entity-reporting-period
     class_alias: RPT
     display_name: Reporting Period
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -1036,7 +1036,7 @@ allocation:
   - entity_id: dea:entity-provenance
     class_alias: PRV
     display_name: Provenance
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -1049,7 +1049,7 @@ allocation:
   - entity_id: dea:entity-analytical-result
     class_alias: ANR
     display_name: Analytical Result
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -1062,7 +1062,7 @@ allocation:
   - entity_id: dea:entity-correlation
     class_alias: COR
     display_name: Correlation
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
@@ -1075,7 +1075,7 @@ allocation:
   - entity_id: dea:entity-causal-hypothesis
     class_alias: CSH
     display_name: Causal Hypothesis
-    status: proposed
+    status: planned
     catalog_repo: null
     scope_layers:
     - L1
