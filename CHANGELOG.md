@@ -7,6 +7,51 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+### CR-AR-FMWK-09: Metric Programme Relationships (root-model slice)
+
+The CR-AR-FMWK-05 §7 follow-on: wires the twelve Metric dimension
+entities with 24 intra-capability edges (79 → 103 relationships),
+translated from the canonical 23-relationship capability in
+`dea-metamodel` docs/metric-capability-map.md §4 onto the existing
+closed rel_type vocabulary (no expansion). Includes the
+`MOBS → MOBS corrects` self-edge. Out-of-scope metamodel edges
+documented with reasons (16-type measured-by/assessed-by surface,
+informs-decision and ReportingPeriod→TemporalInterval Core entities,
+benchmarked-against, supersedes). Additive only: zero entity entries
+and zero pre-existing edges changed (verified programmatically).
+Patch bump v0.7.4 → v0.7.5 in both `VERSION` and `model.version`.
+Carrier: `change-requests/CR-AR-FMWK-09-metric-relationships.md`.
+
+### CR-AR-FMWK-08: Org-Wide `proposed`-Status Audit (9 Promotions)
+
+The org-wide audit deferred by CR-AR-FMWK-06 §7: every `proposed` entity
+enumerated, each `catalog_repo` checked live against GitHub (2026-10-27).
+Nine promotions proposed → planned (EP, RSK, CTL, REG, SIG, EXP, TRE, MDP,
+MFS) — each has an existing foundation-first catalog repo with no
+`CATALOG.yaml`, the exact evidence class accepted in CR-AR-FMWK-06/07.
+Nineteen remain `proposed` with reasons documented: six named-but-nonexistent
+repos (CON, FR, PHR, INR, IA, KA — create-on-content), two abstract kernels
+(PRC, RES), twelve metric-programme dimension entities (deferred to the
+metric follow-on). Patch bump v0.7.3 → v0.7.4 in both `VERSION` and
+`model.version`. Zero semantic drift verified: exactly 9 entities changed,
+only `status`, relationships and terminology untouched. Carrier:
+`change-requests/CR-AR-FMWK-08-org-proposed-audit.md`.
+
+### CR-AR-FMWK-07: Skill (SKL) & Change Initiative (CHI) Status Promotion (proposed → planned)
+
+Forward lifecycle transitions for `dea:entity-skill` (SKL) and
+`dea:entity-change-initiative` (CHI), both L3, L3-people-skills-culture:
+`status: proposed` → `status: planned`, one line each in
+`model/allocation.entities`. Same evidence class as CR-AR-FMWK-06:
+`dea-catalog-skills` and `dea-catalog-change-initiatives` both exist with
+the foundation-first scaffold but no `CATALOG.yaml` and no canonical
+entries — the exact `planned` state per the STRUCT-07c status↔content
+contract. Completes the promotion of the entire L3-people-skills-culture
+building block out of `proposed`. Patch bump v0.7.2 → v0.7.3 in both
+`VERSION` and `model.version`. All other fields, the `SKL → ROL` and
+`CHI → OU` relationships, and every other entity unchanged. Carrier:
+`change-requests/CR-AR-FMWK-07-skl-chi-status-promotion.md`.
+
 ### CR-AR-FMWK-06: Role (ROL) Status Promotion (proposed → planned)
 
 Forward lifecycle transition for `dea:entity-role` (ROL, L3,
