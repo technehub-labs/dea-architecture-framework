@@ -7,6 +7,33 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+### CR-AR-FMWK-10: Metric `measured_by` Integration Surface (root-model slice)
+
+The CR-AR-FMWK-09 §4 follow-on: wires the metamodel's 16-type
+measured/assessed integration surface (docs/metric-capability-map.md §5)
+onto OpenDEAM entities. Additive: `measured_by: [MTR]` on 9 entries (DE,
+OU, VS, APC, AIM, SC, TRE, RSK, CTL) + 10 governance edges (103 → 113
+relationships), including the missing `ISF → MTR` edge for consistency
+with its BP/CAP/SF peers. Four Core metamodel types documented out of
+scope with reasons (AssessmentDimension, MaturityModel, Policy, Service).
+Zero pre-existing entries, fields, or edges modified (verified
+programmatically). Patch bump v0.7.5 → v0.7.6 in both `VERSION` and
+`model.version`. Carrier:
+`change-requests/CR-AR-FMWK-10-metric-integration-surface.md`.
+
+### CR-AR-FMWK-09: Metric Programme Relationships (root-model slice)
+
+The CR-AR-FMWK-05 §7 follow-on: wires the twelve Metric dimension
+entities with 24 intra-capability edges (79 → 103 relationships),
+translated from the canonical 23-relationship capability in
+`dea-metamodel` docs/metric-capability-map.md §4 onto the existing
+closed rel_type vocabulary (no expansion). Includes the
+`MOBS → MOBS corrects` self-edge. Out-of-scope metamodel edges
+documented with reasons. Additive only: zero entity entries and zero
+pre-existing edges changed. Patch bump v0.7.4 → v0.7.5 (merge-artifact
+restore via PR #25). Carrier:
+`change-requests/CR-AR-FMWK-09-metric-relationships.md`.
+
 ### CR-AR-FMWK-08: Org-Wide `proposed`-Status Audit (9 Promotions)
 
 The org-wide audit deferred by CR-AR-FMWK-06 §7: every `proposed` entity
