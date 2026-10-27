@@ -7,6 +7,21 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+### CR-AR-FMWK-08: Org-Wide `proposed`-Status Audit (9 Promotions)
+
+The org-wide audit deferred by CR-AR-FMWK-06 §7: every `proposed` entity
+enumerated, each `catalog_repo` checked live against GitHub (2026-10-27).
+Nine promotions proposed → planned (EP, RSK, CTL, REG, SIG, EXP, TRE, MDP,
+MFS) — each has an existing foundation-first catalog repo with no
+`CATALOG.yaml`, the exact evidence class accepted in CR-AR-FMWK-06/07.
+Nineteen remain `proposed` with reasons documented: six named-but-nonexistent
+repos (CON, FR, PHR, INR, IA, KA — create-on-content), two abstract kernels
+(PRC, RES), twelve metric-programme dimension entities (deferred to the
+metric follow-on). Patch bump v0.7.3 → v0.7.4 in both `VERSION` and
+`model.version`. Zero semantic drift verified: exactly 9 entities changed,
+only `status`, relationships and terminology untouched. Carrier:
+`change-requests/CR-AR-FMWK-08-org-proposed-audit.md`.
+
 ### CR-AR-FMWK-07: Skill (SKL) & Change Initiative (CHI) Status Promotion (proposed → planned)
 
 Forward lifecycle transitions for `dea:entity-skill` (SKL) and
