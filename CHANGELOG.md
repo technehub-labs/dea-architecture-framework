@@ -7,6 +7,23 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+### CR-AR-FMWK-11: Metric Dimension-Entity Lifecycle Promotion (proposed → planned)
+
+Closes the CR-AR-FMWK-08 §8 deferral with a documented governance
+convention: dimension entities follow the same ordered lifecycle, but
+their status expresses programme commitment, not catalog-content backing
+— `planned` when admitted, allocated, and wired; `scaffold`/`existing`
+never apply to a `catalog_repo: null` dimension entity unless a
+per-entity catalog is later chartered. Validator rule 5 already enforces
+this structurally, so the convention is self-enforcing; no validator or
+schema change. Twelve Metric dimension entities (MMT, MOBS, IDS, BSL,
+PTG, THR, PIT, RPT, PRV, ANR, COR, CSH) promoted proposed → planned:
+admitted via CR-MET-001..012, allocated by CR-AR-FMWK-05, wired by
+CR-AR-FMWK-09/10. MTR untouched (existing, real catalog); CON untouched
+(independent create-on-content question). Patch bump v0.7.6 → v0.7.7 in
+both `VERSION` and `model.version`. Carrier:
+`change-requests/CR-AR-FMWK-11-dimension-lifecycle-promotion.md`.
+
 ### CR-AR-FMWK-10: Metric `measured_by` Integration Surface (root-model slice)
 
 The CR-AR-FMWK-09 §4 follow-on: wires the metamodel's 16-type
