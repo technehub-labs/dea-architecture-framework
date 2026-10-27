@@ -1428,3 +1428,123 @@ relationships:
   label: specializes
   rel_type: realization
   cardinality: 0..N:0..N
+- from: MTR
+  to: MMT
+  label: applies metric
+  rel_type: governance
+  cardinality: 0..1:0..N
+- from: MMT
+  to: MOBS
+  label: produces
+  rel_type: dependency
+  cardinality: 1:0..N
+- from: MMT
+  to: PRV
+  label: has provenance
+  rel_type: governance
+  cardinality: 1:0..1
+- from: MOBS
+  to: PRV
+  label: has provenance
+  rel_type: governance
+  cardinality: 1:0..1
+- from: MTR
+  to: PRV
+  label: has provenance
+  rel_type: governance
+  cardinality: 0..1:0..1
+- from: MOBS
+  to: MOBS
+  label: corrects
+  rel_type: dependency
+  cardinality: 0..N:0..N
+- from: MTR
+  to: SO
+  label: applies to
+  rel_type: governance
+  cardinality: 0..1:0..N
+- from: MMT
+  to: SO
+  label: measures subject
+  rel_type: governance
+  cardinality: 1:0..N
+- from: MTR
+  to: BSL
+  label: references baseline
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: MTR
+  to: PTG
+  label: specifies target
+  rel_type: governance
+  cardinality: 0..1:0..N
+- from: SO
+  to: PTG
+  label: has target
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: MMT
+  to: RPT
+  label: applies period
+  rel_type: governance
+  cardinality: 1:0..N
+- from: MOBS
+  to: RPT
+  label: applies period
+  rel_type: governance
+  cardinality: 1:0..N
+- from: BSL
+  to: RPT
+  label: applies period
+  rel_type: governance
+  cardinality: 1:0..N
+- from: PTG
+  to: RPT
+  label: applies period
+  rel_type: governance
+  cardinality: 1:0..N
+- from: THR
+  to: RPT
+  label: applies period
+  rel_type: governance
+  cardinality: 1:0..N
+- from: PIT
+  to: RPT
+  label: applies period
+  rel_type: governance
+  cardinality: 1:0..N
+- from: IDS
+  to: RPT
+  label: applies period
+  rel_type: governance
+  cardinality: 1:0..N
+- from: PIT
+  to: MOBS
+  label: interprets
+  rel_type: dependency
+  cardinality: 0..N:0..N
+- from: THR
+  to: MTR
+  label: constrains
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: MTR
+  to: IDS
+  label: has designation
+  rel_type: governance
+  cardinality: 0..1:0..N
+- from: ANR
+  to: MTR
+  label: analyses metric
+  rel_type: dependency
+  cardinality: 0..N:0..N
+- from: COR
+  to: CSH
+  label: tests hypothesis
+  rel_type: association
+  cardinality: 0..N:0..N
+- from: COR
+  to: MTR
+  label: correlates with
+  rel_type: association
+  cardinality: 0..N:0..N
