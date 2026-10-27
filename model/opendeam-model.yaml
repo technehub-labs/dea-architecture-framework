@@ -1,7 +1,7 @@
 model:
   name: 'OpenDEAM: Open Digital Enterprise Architecture Model'
   id: opendeam
-  version: 0.7.5
+  version: 0.7.6
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
@@ -370,6 +370,14 @@ allocation:
     building_block: L2-risk-compliance
     status: planned
     catalog_repo: dea-catalog-risk-register
+    class_alias: RSK
+    display_name: Risk
+    layer: L2
+    building_block: L2-risk-compliance
+    status: planned
+    catalog_repo: dea-catalog-risk-register
+    measured_by:
+    - MTR
     description: A condition or event that threatens the enterprise's ability to persist or to realize
       a capability/objective.
   - entity_id: dea:entity-control
@@ -379,6 +387,14 @@ allocation:
     building_block: L2-risk-compliance
     status: planned
     catalog_repo: dea-catalog-controls
+    class_alias: CTL
+    display_name: Control
+    layer: L2
+    building_block: L2-risk-compliance
+    status: planned
+    catalog_repo: dea-catalog-controls
+    measured_by:
+    - MTR
     description: A mechanism (process, technical, or organizational) that mitigates a Risk or enforces
       a Regulation.
   - entity_id: dea:entity-regulation
@@ -415,6 +431,14 @@ allocation:
     building_block: L2-innovation-foresight
     status: planned
     catalog_repo: dea-catalog-technology-radar
+    class_alias: TRE
+    display_name: Technology Radar Entry
+    layer: L2
+    building_block: L2-innovation-foresight
+    status: planned
+    catalog_repo: dea-catalog-technology-radar
+    measured_by:
+    - MTR
     description: An emerging technology or technique being tracked (assess/trial/adopt/hold) prior to
       becoming a governed L5 Technology.
   - entity_id: dea:entity-actor
@@ -516,6 +540,14 @@ allocation:
     building_block: L3-work-organization
     status: scaffold
     catalog_repo: dea-catalog-organizational-units
+    class_alias: OU
+    display_name: Organizational Unit
+    layer: L3
+    building_block: L3-work-organization
+    status: scaffold
+    catalog_repo: dea-catalog-organizational-units
+    measured_by:
+    - MTR
     description: A unit of organisation that owns capabilities, runs processes, and is custodian for business
       objects.
   - entity_id: dea:entity-solution-component
@@ -528,6 +560,17 @@ allocation:
     abstract: true
     realized_in_layers:
     - L5
+    class_alias: SC
+    display_name: Solution Component
+    layer: L3
+    building_block: L3-service-offerings
+    status: existing
+    catalog_repo: dea-catalog-digital-business-service-factory
+    abstract: true
+    realized_in_layers:
+    - L5
+    measured_by:
+    - MTR
     description: 'Abstract parent of ApplicationComponent, InfrastructureComponent, IntegrationComponent
       (discriminated union by component_type). Concrete subclasses are allocated to L5; see specializes
       on APC/IFC/IGC below. (ADR-0002 D3)
@@ -540,6 +583,14 @@ allocation:
     building_block: L3-value-delivery
     status: planned
     catalog_repo: dea-catalog-value-streams
+    class_alias: VS
+    display_name: Value Stream
+    layer: L3
+    building_block: L3-value-delivery
+    status: planned
+    catalog_repo: dea-catalog-value-streams
+    measured_by:
+    - MTR
     description: An end-to-end collection of value-creating activities spanning multiple capabilities
       and processes.
   - entity_id: dea:entity-resource
@@ -629,6 +680,15 @@ allocation:
     status: planned
     catalog_repo: dea-catalog-ai-ml-models
     governed_by: []
+    class_alias: AIM
+    display_name: AI/ML Model
+    layer: L4
+    building_block: L4-intelligence
+    status: planned
+    catalog_repo: dea-catalog-ai-ml-models
+    governed_by: []
+    measured_by:
+    - MTR
     description: A machine-learning or AI model that augments or replaces human decision-making within
       a capability. May declare governed_by (RSK/CTL/REG ids) per the ai-automation-governance dimension.
   - entity_id: dea:entity-data-entity
@@ -638,6 +698,14 @@ allocation:
     building_block: L4-data-foundation
     status: planned
     catalog_repo: dea-catalog-data-entities
+    class_alias: DE
+    display_name: Data Entity
+    layer: L4
+    building_block: L4-data-foundation
+    status: planned
+    catalog_repo: dea-catalog-data-entities
+    measured_by:
+    - MTR
     description: A persistent data structure (table, document, graph node) that realises one or more business
       objects.
   - entity_id: dea:entity-digital-identity
@@ -722,6 +790,16 @@ allocation:
     catalog_repo: dea-catalog-application-components
     discriminator: component_type
     specializes: SC
+    class_alias: APC
+    display_name: Application Component
+    layer: L5
+    building_block: L5-systems
+    status: planned
+    catalog_repo: dea-catalog-application-components
+    discriminator: component_type
+    specializes: SC
+    measured_by:
+    - MTR
     description: A deployable unit of an application system. SubClass of SolutionComponent with component_type='application'.
   - entity_id: dea:entity-api
     class_alias: API
@@ -1548,3 +1626,53 @@ relationships:
   label: correlates with
   rel_type: association
   cardinality: 0..N:0..N
+- from: RSK
+  to: MTR
+  label: measured by
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: CTL
+  to: MTR
+  label: measured by
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: TRE
+  to: MTR
+  label: evaluated by
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: OU
+  to: MTR
+  label: measured by
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: VS
+  to: MTR
+  label: measured by
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: SC
+  to: MTR
+  label: evaluated by
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: DE
+  to: MTR
+  label: measured by
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: AIM
+  to: MTR
+  label: evaluated by
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: APC
+  to: MTR
+  label: measured by
+  rel_type: governance
+  cardinality: 0..N:0..N
+- from: ISF
+  to: MTR
+  label: evaluated by
+  rel_type: governance
+  cardinality: 1:0..N
