@@ -7,6 +7,10 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+### CR-AR-FMWK-15: Information Model Entity Allocation (IM)
+
+Allocates dea:entity-information-model (alias IM, L4-information-knowledge, specializes INF, status planned, catalog_repo dea-catalog-information-models) - the conceptual/logical blueprint entity of the information family, distinct from InformationClass (band) and InformationAsset (consumable form). VERSION/model.version MINOR 0.8.2 -> 0.9.0. Note: ADR-0008 (Proposed) rebases to v0.10.0 when it lands. Enables dea-metamodel CR-MET-019 and the catalog-side CR-IM-CAT series.
+
 ### CR-AR-FMWK-14: Concept (CON) Status Promotion + CR-AR-FMWK-08 Record Correction
 
 Corrects a factual error in CR-AR-FMWK-08 §4: `dea-catalog-concepts` was

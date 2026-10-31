@@ -1,7 +1,7 @@
 model:
   name: 'OpenDEAM: Open Digital Enterprise Architecture Model'
   id: opendeam
-  version: 0.8.2
+  version: 0.9.0
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
@@ -823,6 +823,19 @@ allocation:
     entity_role: content
     description: Data given context and form for a specific consuming purpose (a report, dashboard, invoice):distinct
       from the raw Data Entity it's contextualized from.
+  - entity_id: dea:entity-information-model
+    class_alias: IM
+    display_name: Information Model
+    layer: L4
+    building_block: L4-information-knowledge
+    status: planned
+    catalog_repo: dea-catalog-information-models
+    specializes: INF
+    entity_role: content
+    description: A formal model that specifies the structure, semantics, and constraints of information
+      for a domain - the conceptual or logical blueprint from which Data Entities are shaped and
+      Information Assets take form. Distinct from Information Class (the sensitivity/regulatory band)
+      and Information Asset (the consumable form). Class alias IM is unassigned prior to CR-AR-FMWK-15.
   - entity_id: dea:entity-knowledge-asset
     class_alias: KA
     display_name: Knowledge Asset
