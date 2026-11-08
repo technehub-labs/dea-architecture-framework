@@ -1,7 +1,7 @@
 model:
   name: 'OpenDEAM: Open Digital Enterprise Architecture Model'
   id: opendeam
-  version: 0.9.0
+  version: 0.9.1
   status: alpha
   owner_repo: technehub-labs/dea-architecture-framework
   axiom: An enterprise is any bounded entity that persists by exchanging value with its environment.
@@ -260,7 +260,7 @@ allocation:
     display_name: Stakeholder
     layer: L1
     building_block: L1-external-parties
-    status: scaffold
+    status: existing
     catalog_repo: dea-catalog-stakeholders
     description: An external or affected party whose relationship with the enterprise is engaged in or
       affected by enterprise processes.
