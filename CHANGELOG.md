@@ -7,6 +7,10 @@ ADRs (`docs/ADRs/`).
 
 ## [Unreleased]
 
+### CR-AR-FMWK-16: Stakeholder Status Promotion (SH)
+
+One-line promotion `scaffold` -> `existing` for dea:entity-stakeholder: the Stakeholders catalog landed its first canonical tranche on 2026-11-08 (11 records — 3 organisation/governance/community capacities + 8 regulators one-to-one with the regulations catalog's eight active records; `dea-catalog-stakeholders` CR-CATALOG-STRUCT-14, PR #17, all five workflows green), resolving the `check_catalog_index_matches_model` stale-scaffold warning (`scaffold` with `canonical > 0` signals stale model status). ADR-0002 D5 forward transition — PR-only, no ADR. VERSION/model.version PATCH 0.9.0 -> 0.9.1 (CR-AR-FMWK-14 one-line-promotion precedent). Companion metamodel promotion CR-MET-021.
+
 ### CR-AR-FMWK-15: Information Model Entity Allocation (IM)
 
 Allocates dea:entity-information-model (alias IM, L4-information-knowledge, specializes INF, status planned, catalog_repo dea-catalog-information-models) - the conceptual/logical blueprint entity of the information family, distinct from InformationClass (band) and InformationAsset (consumable form). VERSION/model.version MINOR 0.8.2 -> 0.9.0. Note: ADR-0008 (Proposed) rebases to v0.10.0 when it lands. Enables dea-metamodel CR-MET-019 and the catalog-side CR-IM-CAT series.
